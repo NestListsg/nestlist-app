@@ -1,9 +1,10 @@
-
 import streamlit as st
 import anthropic
 import os
 import json
+import hashlib
 from datetime import datetime
+from supabase import create_client, Client
 
 # Page config
 st.set_page_config(
@@ -33,56 +34,190 @@ st.markdown("""
 }
 .stat-num { font-size: 28px; font-weight: 700; color: #2C3E8C; }
 .stat-label { font-size: 12px; color: #888; margin-top: 4px; }
+.login-box {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
 </style>
 """, unsafe_allow_html=True)
 
+# ================================
+# SUPABASE CONNECTION
+# ================================
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://osxxngwryyairxbjqixr.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+
+@st.cache_resource
+def get_supabase():
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
+
+supabase = get_supabase()
+
+# ================================
+# HELPER FUNCTIONS
+# ================================
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def login_agent(email, password):
+    try:
+        result = supabase.table("agents").select("*").eq("email", email).eq("password_hash", hash_password(password)).execute()
+        if result.data:
+            return result.data[0]
+        return None
+    except:
+        return None
+
+def register_agent(email, password, name, agency, specialty):
+    try:
+        result = supabase.table("agents").insert({
+            "email": email,
+            "password_hash": hash_password(password),
+            "name": name,
+            "agency": agency,
+            "specialty": specialty
+        }).execute()
+        return result.data[0] if result.data else None
+    except Exception as e:
+        return None
+
+def get_agent_listings(agent_id):
+    try:
+        result = supabase.table("listings").select("*").eq("agent_id", agent_id).order("created_at", desc=True).execute()
+        return result.data or []
+    except:
+        return []
+
+def save_listing(agent_id, location, price, property_type, content):
+    try:
+        supabase.table("listings").insert({
+            "agent_id": agent_id,
+            "location": location,
+            "price": price,
+            "property_type": property_type,
+            "content": content
+        }).execute()
+        return True
+    except:
+        return False
+
+def update_agent_profile(agent_id, profile_data):
+    try:
+        supabase.table("agents").update(profile_data).eq("id", agent_id).execute()
+        return True
+    except:
+        return False
+
+# ================================
+# LOGIN / REGISTER PAGE
+# ================================
+if "agent" not in st.session_state:
+    st.session_state.agent = None
+
+if st.session_state.agent is None:
+    st.markdown("""
+    <div style="text-align:center; padding: 40px 0 20px;">
+        <h1 style="color:#2C3E8C;">🏡 NestList</h1>
+        <p style="color:#666;">Singapore's AI-Powered Property Platform</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    tab1, tab2 = st.tabs(["Login", "Register"])
+
+    with tab1:
+        st.subheader("Agent Login")
+        email = st.text_input("Email", key="login_email")
+        password = st.text_input("Password", type="password", key="login_password")
+        if st.button("Login", use_container_width=True, key="login_btn"):
+            if email and password:
+                agent = login_agent(email, password)
+                if agent:
+                    st.session_state.agent = agent
+                    st.rerun()
+                else:
+                    st.error("Invalid email or password.")
+            else:
+                st.error("Please enter email and password.")
+
+    with tab2:
+        st.subheader("New Agent Registration")
+        reg_name = st.text_input("Full Name", key="reg_name")
+        reg_email = st.text_input("Email", key="reg_email")
+        reg_agency = st.text_input("Agency", key="reg_agency")
+        reg_specialty = st.selectbox("Specialty", [
+            "Landed & GCB Properties",
+            "Luxury Condominiums",
+            "HDB Resale",
+            "Commercial Properties",
+            "Industrial Properties",
+            "Residential (All Types)"
+        ], key="reg_specialty")
+        reg_password = st.text_input("Password", type="password", key="reg_password")
+        reg_password2 = st.text_input("Confirm Password", type="password", key="reg_password2")
+
+        if st.button("Create Account", use_container_width=True, key="reg_btn"):
+            if not all([reg_name, reg_email, reg_agency, reg_password]):
+                st.error("Please fill in all fields.")
+            elif reg_password != reg_password2:
+                st.error("Passwords do not match.")
+            elif len(reg_password) < 6:
+                st.error("Password must be at least 6 characters.")
+            else:
+                agent = register_agent(reg_email, reg_password, reg_name, reg_agency, reg_specialty)
+                if agent:
+                    st.session_state.agent = agent
+                    st.success("Account created! Welcome to NestList!")
+                    st.rerun()
+                else:
+                    st.error("Email already registered or error occurred.")
+
+    st.stop()
+
+# ================================
+# MAIN APP (LOGGED IN)
+# ================================
+agent = st.session_state.agent
+
 # Header
-st.markdown("""
+st.markdown(f"""
 <div class="header">
     <h2>🏡 NestList Premium</h2>
-    <p>Welcome back, Jane Lee | Landed & GCB Specialist</p>
+    <p>Welcome back, {agent['name']} | {agent['specialty']}</p>
 </div>
 """, unsafe_allow_html=True)
 
 # Sidebar
-st.sidebar.image("https://via.placeholder.com/150x50/2C3E8C/ffffff?text=NestList", 
-                  use_container_width=True)
+st.sidebar.markdown(f"### 👤 {agent['name']}")
+st.sidebar.markdown(f"*{agent['agency']}*")
 st.sidebar.markdown("---")
 page = st.sidebar.radio(
     "Navigation",
-    ["📊 Dashboard", 
-     "✍️ New Listing", 
+    ["📊 Dashboard",
+     "✍️ New Listing",
      "🏡 My Listings",
      "💬 Enquiries",
      "👤 My Profile",
      "💳 Billing"],
     label_visibility="hidden"
 )
-
-# Initialize session state for listings
-if "listings" not in st.session_state:
-    st.session_state.listings = []
-
-if "agent_profile" not in st.session_state:
-    st.session_state.agent_profile = {
-        "name": "Jane Lee",
-        "agency": "NestList",
-        "specialty": "Landed & GCB Properties",
-        "tone": "Warm & Conversational",
-        "emphasis": "Family Living & Emotional Comfort",
-        "signature": "Home is where the heart is, so the saying goes. Nothing beats coming back to a place where you feel most comfort after a long day.",
-        "contact": "Contact Jane for a private viewing"
-    }
+st.sidebar.markdown("---")
+if st.sidebar.button("🚪 Logout", use_container_width=True):
+    st.session_state.agent = None
+    st.rerun()
 
 # ================================
 # DASHBOARD PAGE
 # ================================
 if page == "📊 Dashboard":
     st.title("Dashboard")
-    
-    # Real stats from session
-    total_listings = len(st.session_state.listings)
-    
+
+    listings = get_agent_listings(agent['id'])
+    total_listings = len(listings)
+
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(f"""
@@ -112,13 +247,11 @@ if page == "📊 Dashboard":
             <div class="stat-label">Serious Buyers</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     st.markdown("---")
-    
-    # Recent listings
     st.subheader("Recent Listings")
-    if st.session_state.listings:
-        for listing in reversed(st.session_state.listings[-3:]):
+    if listings:
+        for listing in listings[:3]:
             with st.expander(f"🏡 {listing['location']} — SGD {listing['price']}"):
                 st.write(listing['content'])
     else:
@@ -129,7 +262,6 @@ if page == "📊 Dashboard":
     col1, col2 = st.columns(2)
     with col1:
         if st.button("✍️ Create New Listing", use_container_width=True):
-            st.switch_page
             st.info("Go to '✍️ New Listing' in the sidebar!")
     with col2:
         if st.button("👤 Update My Profile", use_container_width=True):
@@ -144,63 +276,22 @@ elif page == "✍️ New Listing":
 
     with st.form("new_listing_form"):
         col1, col2 = st.columns(2)
-
         with col1:
-            property_type = st.selectbox(
-                "1. Property Type",
-                ["Good Class Bungalow (GCB)",
-                 "Landed Bungalow",
-                 "Semi-Detached",
-                 "Terrace House",
-                 "HDB Flat",
-                 "Condominium"]
-            )
-            location = st.text_input(
-                "2. Location",
-                placeholder="e.g. Nassim Road, District 10"
-            )
-            land_size = st.number_input(
-                "3. Land Size (sqft)",
-                min_value=0,
-                value=0
-            )
-            plot_width = st.number_input(
-                "4. Plot Width (metres)",
-                min_value=0.0,
-                value=0.0
-            )
-
+            property_type = st.selectbox("1. Property Type", [
+                "Good Class Bungalow (GCB)", "Landed Bungalow",
+                "Semi-Detached", "Terrace House", "HDB Flat", "Condominium"
+            ])
+            location = st.text_input("2. Location", placeholder="e.g. Nassim Road, District 10")
+            land_size = st.number_input("3. Land Size (sqft)", min_value=0, value=0)
+            plot_width = st.number_input("4. Plot Width (metres)", min_value=0.0, value=0.0)
         with col2:
-            built_up = st.number_input(
-                "5. Built-up Size (sqft)",
-                min_value=0,
-                value=0
-            )
-            bedrooms = st.text_input(
-                "6. Bedrooms & Bathrooms",
-                placeholder="e.g. 4 bedrooms, 4 bathrooms"
-            )
-            price = st.text_input(
-                "7. Asking Price (SGD)",
-                placeholder="e.g. 25,700,000"
-            )
+            built_up = st.number_input("5. Built-up Size (sqft)", min_value=0, value=0)
+            bedrooms = st.text_input("6. Bedrooms & Bathrooms", placeholder="e.g. 4 bedrooms, 4 bathrooms")
+            price = st.text_input("7. Asking Price (SGD)", placeholder="e.g. 25,700,000")
 
-        features = st.text_area(
-            "Special Features",
-            placeholder="e.g. Private pool, 3-car garage, newly renovated"
-        )
-
-        st.markdown("---")
-        declaration = st.checkbox(
-            "I confirm all details are accurate and truthful. "
-            "I understand NestList will run an automatic URA "
-            "compliance check before posting."
-        )
-
-        submitted = st.form_submit_button(
-            "🤖 Generate My Listing Automatically",
-            use_container_width=True
-        )
+        features = st.text_area("Special Features", placeholder="e.g. Private pool, 3-car garage, newly renovated")
+        declaration = st.checkbox("I confirm all details are accurate and truthful.")
+        submitted = st.form_submit_button("🤖 Generate My Listing Automatically", use_container_width=True)
 
     if submitted:
         if not declaration:
@@ -208,19 +299,17 @@ elif page == "✍️ New Listing":
         elif not location or not bedrooms or not price:
             st.error("Please fill in all required fields.")
         else:
-            # COMPLIANCE CHECK
             st.markdown("---")
             st.subheader("Step 1 — URA Compliance Check")
 
             gcb_zones = [
-                "nassim", "cluny", "white house park", "dalvey",
-                "ladyhill", "cornwall", "king albert park",
-                "raffles park", "swiss club", "victoria park",
-                "holland", "bin tong park", "leedon", "maryland",
-                "bishopsgate", "fourth avenue", "grange", "jervois",
-                "rochalie", "linden", "chee hoon", "swettenham",
-                "tanglin", "chestnut", "sunset", "upper bukit timah",
-                "rifle range", "spring grove", "belmont", "windsor"
+                "nassim", "cluny", "white house park", "dalvey", "ladyhill",
+                "cornwall", "king albert park", "raffles park", "swiss club",
+                "victoria park", "holland", "bin tong park", "leedon",
+                "maryland", "bishopsgate", "fourth avenue", "grange", "jervois",
+                "rochalie", "linden", "chee hoon", "swettenham", "tanglin",
+                "chestnut", "sunset", "upper bukit timah", "rifle range",
+                "spring grove", "belmont", "windsor"
             ]
 
             issues = []
@@ -234,21 +323,19 @@ elif page == "✍️ New Listing":
                 if in_zone:
                     passed.append("Location confirmed within gazetted GCBa zone")
                 else:
-                    warnings.append("Location could not be verified as GCBa zone. Please confirm with URA.")
+                    warnings.append("Location could not be verified as GCBa zone.")
 
                 if land_size >= 15069:
                     passed.append(f"Land size {land_size:,} sqft meets URA minimum")
                 elif land_size >= 14000:
-                    warnings.append(f"Land size {land_size:,} sqft slightly below minimum. Please verify with URA.")
+                    warnings.append(f"Land size {land_size:,} sqft slightly below minimum.")
                 elif land_size > 0:
                     issues.append(f"Land size {land_size:,} sqft does not meet GCB minimum of 15,069 sqft")
 
                 if plot_width >= 18.5:
                     passed.append(f"Plot width {plot_width}m meets URA minimum")
                 elif plot_width > 0:
-                    warnings.append(f"Plot width {plot_width}m below URA minimum of 18.5m. Please verify.")
-                else:
-                    warnings.append("Plot width not provided. Please verify minimum 18.5m.")
+                    warnings.append(f"Plot width {plot_width}m below URA minimum of 18.5m.")
 
             for p in passed:
                 st.success(f"✅ {p}")
@@ -257,27 +344,23 @@ elif page == "✍️ New Listing":
             for i in issues:
                 st.error(f"❌ {i}")
 
-            if issues:
-                st.error("❌ Listing blocked — please fix the issues above.")
-            else:
-                # GENERATE LISTING
+            if not issues:
                 st.markdown("---")
                 st.subheader("Step 2 — Claude is writing your listing...")
 
-                profile = st.session_state.agent_profile
                 prompt = f"""
-You are {profile['name']} from {profile['agency']}, 
-a specialist in {profile['specialty']}.
-Your tone: {profile['tone']}
-You emphasise: {profile['emphasis']}
-Your signature phrase: "{profile['signature']}"
+You are {agent['name']} from {agent['agency']},
+a specialist in {agent['specialty']}.
+Your tone: {agent['tone']}
+You emphasise: {agent['emphasis']}
+Your signature phrase: "{agent['signature']}"
 Weave this phrase in naturally.
 
 Write a premium property listing for:
 - Type: {property_type}
 - Location: {location}
 - Land size: {land_size:,} sqft
-- Built-up: {built_up:,} sqft  
+- Built-up: {built_up:,} sqft
 - Bedrooms: {bedrooms}
 - Price: SGD {price}
 - Features: {features}
@@ -286,7 +369,7 @@ Write:
 1. A compelling headline in your style
 2. Three paragraphs in your personal voice
 3. A warm call to action
-4. End with: {profile['name']} | {profile['agency']} Specialist
+4. End with: {agent['name']} | {agent['agency']} Specialist
 """
                 try:
                     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -300,26 +383,12 @@ Write:
                         )
 
                     listing_text = response.content[0].text
+                    save_listing(agent['id'], location, price, property_type, listing_text)
 
-                    # Save to session state
-                    st.session_state.listings.append({
-                        "location": location,
-                        "price": price,
-                        "type": property_type,
-                        "date": datetime.now().strftime("%d %b %Y %I:%M %p"),
-                        "content": listing_text
-                    })
-
-                    # Show listing
                     st.markdown("---")
                     st.subheader("Step 3 — Your Listing is Ready! 🎉")
                     st.markdown(listing_text)
-
-                    st.caption(
-                        "DISCLAIMER: Auto-verified by NestList compliance system. "
-                        "Agents responsible for accuracy. Buyers conduct own due diligence."
-                    )
-                    st.success("✅ Listing generated and saved to My Listings!")
+                    st.success("✅ Listing saved to My Listings!")
 
                 except Exception as e:
                     st.error(f"Error generating listing: {str(e)}")
@@ -329,26 +398,16 @@ Write:
 # ================================
 elif page == "🏡 My Listings":
     st.title("My Listings")
+    listings = get_agent_listings(agent['id'])
 
-    if st.session_state.listings:
-        st.write(f"You have {len(st.session_state.listings)} listing(s) generated this session.")
+    if listings:
+        st.write(f"You have {len(listings)} listing(s).")
         st.markdown("---")
-
-        for i, listing in enumerate(reversed(st.session_state.listings)):
-            with st.expander(
-                f"🏡 {listing['location']} — SGD {listing['price']} | {listing['date']}"
-            ):
+        for i, listing in enumerate(listings):
+            with st.expander(f"🏡 {listing['location']} — SGD {listing['price']} | {listing['created_at'][:10]}"):
                 st.markdown(listing["content"])
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.button(f"📋 Copy Listing #{i+1}", 
-                             key=f"copy_{i}")
-                with col2:
-                    st.button(f"🔄 Regenerate #{i+1}", 
-                             key=f"regen_{i}")
     else:
         st.info("No listings yet! Go to '✍️ New Listing' to create your first one.")
-        st.markdown("Once you generate listings they will appear here automatically.")
 
 # ================================
 # ENQUIRIES PAGE
@@ -356,110 +415,62 @@ elif page == "🏡 My Listings":
 elif page == "💬 Enquiries":
     st.title("Buyer Enquiries")
     st.info("🔜 Coming in Week 3 — buyer enquiries and AI auto-replies will appear here!")
-    st.markdown("""
-    **What's coming:**
-    - Buyers enquire through your listing
-    - AI reads their message automatically  
-    - AI sends a smart personalised reply instantly
-    - You get notified on WhatsApp
-    - All enquiries tracked here in one place
-    """)
 
 # ================================
 # MY PROFILE PAGE
 # ================================
 elif page == "👤 My Profile":
     st.title("My Profile & Style Settings")
-    st.write("Update your details below. Your style is applied to every listing you generate.")
-
-    profile = st.session_state.agent_profile
 
     st.subheader("Agent Details")
     col1, col2 = st.columns(2)
     with col1:
-        name = st.text_input("Full Name", value=profile["name"])
-        agency = st.text_input("Agency", value=profile["agency"])
+        name = st.text_input("Full Name", value=agent["name"])
+        agency = st.text_input("Agency", value=agent["agency"])
     with col2:
-        specialty = st.text_input("Specialty", value=profile["specialty"])
-        contact = st.text_input("Contact", value=profile["contact"])
+        specialty = st.text_input("Specialty", value=agent["specialty"])
+        contact = st.text_input("Contact", value=agent.get("contact", ""))
 
     st.markdown("---")
     st.subheader("My Writing Style")
 
-    tone = st.selectbox(
-        "Writing Tone",
-        ["Warm & Conversational",
-         "Formal & Professional",
-         "Bold & Punchy"],
-        index=["Warm & Conversational",
-               "Formal & Professional",
-               "Bold & Punchy"].index(profile["tone"])
-        if profile["tone"] in ["Warm & Conversational",
-                               "Formal & Professional",
-                               "Bold & Punchy"] else 0
-    )
+    tone_options = ["Warm & Conversational", "Formal & Professional", "Bold & Punchy"]
+    tone = st.selectbox("Writing Tone", tone_options,
+        index=tone_options.index(agent["tone"]) if agent["tone"] in tone_options else 0)
 
-    emphasis = st.selectbox(
-        "What I Emphasise",
-        ["Family Living & Emotional Comfort",
-         "Investment Returns & Capital Appreciation",
-         "Lifestyle & Prestige",
-         "Architecture & Design"],
-        index=["Family Living & Emotional Comfort",
-               "Investment Returns & Capital Appreciation",
-               "Lifestyle & Prestige",
-               "Architecture & Design"].index(profile["emphasis"])
-        if profile["emphasis"] in ["Family Living & Emotional Comfort",
-                                   "Investment Returns & Capital Appreciation",
-                                   "Lifestyle & Prestige",
-                                   "Architecture & Design"] else 0
-    )
+    emphasis_options = [
+        "Family Living & Emotional Comfort",
+        "Investment Returns & Capital Appreciation",
+        "Lifestyle & Prestige",
+        "Architecture & Design"
+    ]
+    emphasis = st.selectbox("What I Emphasise", emphasis_options,
+        index=emphasis_options.index(agent["emphasis"]) if agent["emphasis"] in emphasis_options else 0)
 
-    signature = st.text_area(
-        "My Signature Phrase",
-        value=profile["signature"],
-        height=100,
-        help="This phrase will be woven naturally into every listing you generate."
-    )
+    signature = st.text_area("My Signature Phrase", value=agent["signature"], height=100)
 
     st.markdown("---")
     if st.button("💾 Save My Style Settings", use_container_width=True):
-        st.session_state.agent_profile = {
-            "name": name,
-            "agency": agency,
-            "specialty": specialty,
-            "tone": tone,
-            "emphasis": emphasis,
-            "signature": signature,
-            "contact": contact
+        profile_data = {
+            "name": name, "agency": agency, "specialty": specialty,
+            "tone": tone, "emphasis": emphasis, "signature": signature, "contact": contact
         }
-        st.success("✅ Profile saved! Your next listing will use these settings.")
-        st.balloons()
+        if update_agent_profile(agent['id'], profile_data):
+            st.session_state.agent.update(profile_data)
+            st.success("✅ Profile saved!")
+            st.balloons()
+        else:
+            st.error("Error saving profile.")
 
 # ================================
 # BILLING PAGE
 # ================================
 elif page == "💳 Billing":
     st.title("Billing & Subscription")
-
     st.markdown("""
     <div style="background:#EEEDFE;border-radius:10px;padding:16px;margin-bottom:16px;">
         <h3 style="color:#3C3489;margin:0;">NestList Premium</h3>
-        <p style="color:#534AB7;margin:4px 0 0;">SGD 149 / month | Next billing: 1 June 2026</p>
+        <p style="color:#534AB7;margin:4px 0 0;">SGD 149 / month</p>
     </div>
     """, unsafe_allow_html=True)
-
-    st.subheader("Billing History")
-    billing = [
-        ("May 2026", "1 May 2026", "SGD 149"),
-        ("April 2026", "1 April 2026", "SGD 149"),
-    ]
-    for month, date, amount in billing:
-        col1, col2, col3 = st.columns([3, 3, 1])
-        with col1:
-            st.write(f"**{month}** — NestList Premium")
-        with col2:
-            st.write(f"Paid on {date}")
-        with col3:
-            st.write(f"✅ {amount}")
-        st.divider()
+    st.info("🔜 Stripe payment integration coming soon!")
