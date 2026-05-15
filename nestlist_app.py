@@ -61,7 +61,7 @@ supabase = get_supabase()
 # HELPER FUNCTIONS
 # ================================
 def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+    return password
 
 def login_agent(email, password):
     try:
