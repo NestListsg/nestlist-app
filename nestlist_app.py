@@ -127,20 +127,20 @@ if st.session_state.agent is None:
         email = st.text_input("Email", key="login_email")
         password = st.text_input("Password", type="password", key="login_password")
         if st.button("Login", use_container_width=True, key="login_btn"):
-    if email and password:
-        result = supabase.table("agents").select("*").eq("email", email).execute()
-        st.write(f"DB returned: {result.data}")
-        if result.data:
-            agent = result.data[0]
-            st.write(f"Password in DB: '{agent['password_hash']}'")
-            st.write(f"Password entered: '{password}'")
-            st.write(f"Match: {agent['password_hash'] == password}")
-        agent = login_agent(email, password)
-        if agent:
-            st.session_state.agent = agent
-            st.rerun()
-        else:
-            st.error("Invalid email or password.")
+            if email and password:
+                result = supabase.table("agents").select("*").eq("email", email).execute()
+                st.write(f"DB returned: {result.data}")
+                if result.data:
+                    agent_row = result.data[0]
+                    st.write(f"Password in DB: '{agent_row['password_hash']}'")
+                    st.write(f"Password entered: '{password}'")
+                    st.write(f"Match: {agent_row['password_hash'] == password}")
+                agent = login_agent(email, password)
+                if agent:
+                    st.session_state.agent = agent
+                    st.rerun()
+                else:
+                    st.error("Invalid email or password.")
             else:
                 st.error("Please enter email and password.")
 
