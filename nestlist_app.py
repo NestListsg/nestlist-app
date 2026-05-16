@@ -55,9 +55,11 @@ def hash_password(password):
 
 def login_agent(email, password):
     try:
-        result = supabase.table("agents").select("*").eq("email", email).eq("password_hash", hash_password(password)).execute()
+        result = supabase.table("agents").select("*").eq("email", email).execute()
         if result.data:
-            return result.data[0]
+            agent = result.data[0]
+            if agent["password_hash"] == password:
+                return agent
         return None
     except Exception as e:
         st.error(f"DB Error: {str(e)}")
