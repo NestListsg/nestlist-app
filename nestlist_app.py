@@ -69,8 +69,10 @@ def login_agent(email, password):
         if result.data:
             return result.data[0]
         return None
-    except:
-        return None
+    except Exception as e:
+    st.error(f"DB Error: {str(e)}")
+    return None
+        
 
 def register_agent(email, password, name, agency, specialty):
     try:
