@@ -1,8 +1,6 @@
 import streamlit as st
 import anthropic
 import os
-import json
-import hashlib
 from datetime import datetime
 from supabase import create_client, Client
 
@@ -34,14 +32,6 @@ st.markdown("""
 }
 .stat-num { font-size: 28px; font-weight: 700; color: #2C3E8C; }
 .stat-label { font-size: 12px; color: #888; margin-top: 4px; }
-.login-box {
-    max-width: 400px;
-    margin: 80px auto;
-    padding: 40px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -70,9 +60,8 @@ def login_agent(email, password):
             return result.data[0]
         return None
     except Exception as e:
-    st.error(f"DB Error: {str(e)}")
-    return None
-        
+        st.error(f"DB Error: {str(e)}")
+        return None
 
 def register_agent(email, password, name, agency, specialty):
     try:
@@ -85,6 +74,7 @@ def register_agent(email, password, name, agency, specialty):
         }).execute()
         return result.data[0] if result.data else None
     except Exception as e:
+        st.error(f"Registration Error: {str(e)}")
         return None
 
 def get_agent_listings(agent_id):
