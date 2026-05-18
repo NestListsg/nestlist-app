@@ -1,6 +1,7 @@
 import streamlit as st
 import anthropic
 import os
+import bcrypt
 from datetime import datetime
 from supabase import create_client, Client
 
@@ -51,14 +52,30 @@ supabase = get_supabase()
 # HELPER FUNCTIONS
 # ================================
 def hash_password(password):
-    return password
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password, hashed):
+    try:
+        # Handle both plain text (old) and bcrypt (new) passwords
+        if hashed.startswith('$2b$') or hashed.startswith('$2a$'):
+            return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+        else:
+            # Legacy plain text comparison
+            return password == hashed
+    except Exception:
+        return False
 
 def login_agent(email, password):
     try:
         result = supabase.table("agents").select("*").eq("email", email).execute()
         if result.data:
             agent = result.data[0]
-            if agent["password_hash"] == password:
+            if verify_password(password, agent["password_hash"]):
+                # Upgrade plain text password to bcrypt on successful login
+                if not (agent["password_hash"].startswith('$2b$') or agent["password_hash"].startswith('$2a$')):
+                    new_hash = hash_password(password)
+                    supabase.table("agents").update({"password_hash": new_hash}).eq("id", agent["id"]).execute()
+                    agent["password_hash"] = new_hash
                 return agent
         return None
     except Exception as e:
@@ -278,12 +295,16 @@ elif page == "✍️ New Listing":
             location = st.text_input("2. Location", placeholder="e.g. Nassim Road, District 10")
             land_size = st.number_input("3. Land Size (sqft)", min_value=0, value=0)
             plot_width = st.number_input("4. Plot Width (metres)", min_value=0.0, value=0.0)
+            plot_depth = st.number_input("5. Plot Depth (metres)", min_value=0.0, value=0.0)
         with col2:
-            built_up = st.number_input("5. Built-up Size (sqft)", min_value=0, value=0)
-            bedrooms = st.text_input("6. Bedrooms & Bathrooms", placeholder="e.g. 4 bedrooms, 4 bathrooms")
-            price = st.text_input("7. Asking Price (SGD)", placeholder="e.g. 25,700,000")
+            built_up = st.number_input("6. Built-up Size (sqft)", min_value=0, value=0)
+            bedrooms = st.text_input("7. Bedrooms & Bathrooms", placeholder="e.g. 4 bedrooms, 4 bathrooms")
+            price = st.text_input("8. Asking Price (SGD)", placeholder="e.g. 25,700,000")
+            storeys = st.number_input("9. Number of Storeys", min_value=0, max_value=10, value=0)
+            site_coverage = st.number_input("10. Site Coverage (%)", min_value=0.0, max_value=100.0, value=0.0)
 
         features = st.text_area("Special Features", placeholder="e.g. Private pool, 3-car garage, newly renovated")
+        sg_citizen = st.checkbox("I confirm the buyer is a Singapore Citizen (required for GCB purchases)")
         declaration = st.checkbox("I confirm all details are accurate and truthful.")
         submitted = st.form_submit_button("🤖 Generate My Listing Automatically", use_container_width=True)
 
@@ -317,19 +338,47 @@ elif page == "✍️ New Listing":
                 if in_zone:
                     passed.append("Location confirmed within gazetted GCBa zone")
                 else:
-                    warnings.append("Location could not be verified as GCBa zone.")
+                    warnings.append("Location could not be verified as GCBa zone — please confirm with URA.")
 
+                # Minimum land size
                 if land_size >= 15069:
-                    passed.append(f"Land size {land_size:,} sqft meets URA minimum")
+                    passed.append(f"Land size {land_size:,} sqft meets URA minimum of 15,069 sqft")
                 elif land_size >= 14000:
-                    warnings.append(f"Land size {land_size:,} sqft slightly below minimum.")
+                    warnings.append(f"Land size {land_size:,} sqft is slightly below URA minimum — please verify.")
                 elif land_size > 0:
                     issues.append(f"Land size {land_size:,} sqft does not meet GCB minimum of 15,069 sqft")
 
+                # Plot width
                 if plot_width >= 18.5:
-                    passed.append(f"Plot width {plot_width}m meets URA minimum")
+                    passed.append(f"Plot width {plot_width}m meets URA minimum of 18.5m")
                 elif plot_width > 0:
-                    warnings.append(f"Plot width {plot_width}m below URA minimum of 18.5m.")
+                    issues.append(f"Plot width {plot_width}m does not meet URA minimum of 18.5m")
+
+                # Plot depth
+                if plot_depth >= 30:
+                    passed.append(f"Plot depth {plot_depth}m meets URA minimum of 30m")
+                elif plot_depth > 0:
+                    issues.append(f"Plot depth {plot_depth}m does not meet URA minimum of 30m")
+
+                # Site coverage
+                if site_coverage > 0:
+                    if site_coverage <= 40:
+                        passed.append(f"Site coverage {site_coverage}% is within URA maximum of 40%")
+                    else:
+                        issues.append(f"Site coverage {site_coverage}% exceeds URA maximum of 40%")
+
+                # Number of storeys
+                if storeys > 0:
+                    if storeys <= 2:
+                        passed.append(f"{storeys} storey(s) meets URA maximum height of 2 storeys")
+                    else:
+                        issues.append(f"{storeys} storeys exceeds URA maximum of 2 storeys for GCB")
+
+                # Singapore Citizen check
+                if not sg_citizen:
+                    issues.append("GCB purchases are restricted to Singapore Citizens only — PRs and foreigners are not eligible")
+                else:
+                    passed.append("Buyer confirmed as Singapore Citizen — eligible for GCB purchase")
 
             for p in passed:
                 st.success(f"✅ {p}")
