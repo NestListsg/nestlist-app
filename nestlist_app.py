@@ -2,6 +2,7 @@ import streamlit as st
 import anthropic
 import os
 import bcrypt
+import requests
 from datetime import datetime
 from supabase import create_client, Client
 
@@ -49,6 +50,44 @@ def get_supabase():
 supabase = get_supabase()
 
 # ================================
+# FACEBOOK AUTO-POSTING
+# ================================
+def post_to_facebook(listing_text, location, price, property_type):
+    """Post a listing to the NestList Facebook Page."""
+    fb_token = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
+    fb_page_id = os.environ.get("FB_PAGE_ID", "")
+
+    if not fb_token or not fb_page_id:
+        return False, "Facebook credentials not configured."
+
+    # Create a short, punchy Facebook post from the listing
+    post_message = f"""🏡 NEW LISTING | {property_type}
+📍 {location}
+💰 SGD {price}
+
+{listing_text[:800]}...
+
+📞 Contact us at nestlist.sg to find out more!
+
+#NestList #Singapore #SingaporeProperty #GCB #LandedProperty #PropertySG #RealEstate"""
+
+    url = f"https://graph.facebook.com/v25.0/{fb_page_id}/feed"
+    payload = {
+        "message": post_message,
+        "access_token": fb_token
+    }
+
+    try:
+        response = requests.post(url, data=payload)
+        result = response.json()
+        if "id" in result:
+            return True, result["id"]
+        else:
+            return False, result.get("error", {}).get("message", "Unknown error")
+    except Exception as e:
+        return False, str(e)
+
+# ================================
 # HELPER FUNCTIONS
 # ================================
 def hash_password(password):
@@ -56,11 +95,9 @@ def hash_password(password):
 
 def verify_password(password, hashed):
     try:
-        # Handle both plain text (old) and bcrypt (new) passwords
         if hashed.startswith('$2b$') or hashed.startswith('$2a$'):
             return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
         else:
-            # Legacy plain text comparison
             return password == hashed
     except Exception:
         return False
@@ -71,7 +108,6 @@ def login_agent(email, password):
         if result.data:
             agent = result.data[0]
             if verify_password(password, agent["password_hash"]):
-                # Upgrade plain text password to bcrypt on successful login
                 if not (agent["password_hash"].startswith('$2b$') or agent["password_hash"].startswith('$2a$')):
                     new_hash = hash_password(password)
                     supabase.table("agents").update({"password_hash": new_hash}).eq("id", agent["id"]).execute()
@@ -340,7 +376,6 @@ elif page == "✍️ New Listing":
                 else:
                     warnings.append("Location could not be verified as GCBa zone — please confirm with URA.")
 
-                # Minimum land size
                 if land_size >= 15069:
                     passed.append(f"Land size {land_size:,} sqft meets URA minimum of 15,069 sqft")
                 elif land_size >= 14000:
@@ -348,33 +383,28 @@ elif page == "✍️ New Listing":
                 elif land_size > 0:
                     issues.append(f"Land size {land_size:,} sqft does not meet GCB minimum of 15,069 sqft")
 
-                # Plot width
                 if plot_width >= 18.5:
                     passed.append(f"Plot width {plot_width}m meets URA minimum of 18.5m")
                 elif plot_width > 0:
                     issues.append(f"Plot width {plot_width}m does not meet URA minimum of 18.5m")
 
-                # Plot depth
                 if plot_depth >= 30:
                     passed.append(f"Plot depth {plot_depth}m meets URA minimum of 30m")
                 elif plot_depth > 0:
                     issues.append(f"Plot depth {plot_depth}m does not meet URA minimum of 30m")
 
-                # Site coverage
                 if site_coverage > 0:
                     if site_coverage <= 40:
                         passed.append(f"Site coverage {site_coverage}% is within URA maximum of 40%")
                     else:
                         issues.append(f"Site coverage {site_coverage}% exceeds URA maximum of 40%")
 
-                # Number of storeys
                 if storeys > 0:
                     if storeys <= 2:
                         passed.append(f"{storeys} storey(s) meets URA maximum height of 2 storeys")
                     else:
                         issues.append(f"{storeys} storeys exceeds URA maximum of 2 storeys for GCB")
 
-                # Singapore Citizen check
                 if not sg_citizen:
                     issues.append("GCB purchases are restricted to Singapore Citizens only — PRs and foreigners are not eligible")
                 else:
@@ -433,6 +463,22 @@ Write:
                     st.markdown(listing_text)
                     st.success("✅ Listing saved to My Listings!")
 
+                    # ================================
+                    # FACEBOOK AUTO-POSTING
+                    # ================================
+                    st.markdown("---")
+                    st.subheader("Step 4 — Post to Facebook 📘")
+                    st.info("Your listing is ready to post to the NestList Facebook Page!")
+
+                    if st.button("📘 Post to NestList Facebook Page Now", use_container_width=True):
+                        with st.spinner("Posting to Facebook..."):
+                            success, result = post_to_facebook(listing_text, location, price, property_type)
+                        if success:
+                            st.success(f"✅ Successfully posted to Facebook! Post ID: {result}")
+                            st.balloons()
+                        else:
+                            st.error(f"❌ Facebook post failed: {result}")
+
                 except Exception as e:
                     st.error(f"Error generating listing: {str(e)}")
 
@@ -449,6 +495,18 @@ elif page == "🏡 My Listings":
         for i, listing in enumerate(listings):
             with st.expander(f"🏡 {listing['location']} — SGD {listing['price']} | {listing['created_at'][:10]}"):
                 st.markdown(listing["content"])
+                if st.button(f"📘 Post to Facebook", key=f"fb_post_{i}"):
+                    with st.spinner("Posting to Facebook..."):
+                        success, result = post_to_facebook(
+                            listing["content"],
+                            listing["location"],
+                            listing["price"],
+                            listing["property_type"]
+                        )
+                    if success:
+                        st.success(f"✅ Posted to Facebook! Post ID: {result}")
+                    else:
+                        st.error(f"❌ Failed: {result}")
     else:
         st.info("No listings yet! Go to '✍️ New Listing' to create your first one.")
 
