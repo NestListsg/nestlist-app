@@ -24,6 +24,15 @@ html, body, [class*="css"] { font-family: 'Montserrat', sans-serif; }
 .stApp { background: #0E2820; }
 .main .block-container { padding: 0 !important; max-width: 100% !important; }
 
+/* Hide Streamlit default UI elements */
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
+header { visibility: hidden !important; }
+[data-testid="stToolbar"] { display: none !important; }
+[data-testid="stDecoration"] { display: none !important; }
+[data-testid="stStatusWidget"] { display: none !important; }
+.viewerBadge_container__1QSob { display: none !important; }
+
 [data-testid="stSidebar"] {
     background: #0E2820 !important;
     border-right: 0.5px solid rgba(212,175,55,0.15) !important;
@@ -506,23 +515,23 @@ st.sidebar.markdown(f"""
 
 page = st.sidebar.radio(
     "Navigation",
-    ["\U0001f4ca Dashboard",
-     "\u270d\ufe0f New Listing",
-     "\U0001f3e1 My Listings",
-     "\U0001f4ac Enquiries",
-     "\U0001f464 My Profile",
-     "\U0001f4b3 Billing"],
+    ["Dashboard",
+     "New Listing",
+     "My Listings",
+     "Enquiries",
+     "My Profile",
+     "Billing"],
     label_visibility="hidden"
 )
 st.sidebar.markdown("---")
-if st.sidebar.button("\U0001f6aa Logout", use_container_width=True):
+if st.sidebar.button("Logout", use_container_width=True):
     st.session_state.agent = None
     st.rerun()
 
 # ================================
 # DASHBOARD PAGE
 # ================================
-if page == "\U0001f4ca Dashboard":
+if page == "Dashboard":
     listings = get_agent_listings(agent["id"])
     total_listings = len(listings)
 
@@ -542,22 +551,22 @@ if page == "\U0001f4ca Dashboard":
         st.markdown('<div class="nl-panel"><div class="nl-panel-title">Recent Listings</div></div>', unsafe_allow_html=True)
         if listings:
             for listing in listings[:3]:
-                with st.expander(f"\U0001f3e1 {listing['location']} — SGD {listing['price']}"):
+                with st.expander(f"{listing['location']} — SGD {listing['price']}"):
                     st.write(listing["content"])
         else:
             st.info("No listings yet. Click \'New Listing\' to create your first one!")
 
     with col_right:
         st.markdown('<div class="nl-panel"><div class="nl-panel-title">Quick Actions</div></div>', unsafe_allow_html=True)
-        if st.button("\u270d\ufe0f Create New Listing", use_container_width=True):
+        if st.button("Create New Listing", use_container_width=True):
             st.info("Go to \'New Listing\' in the sidebar!")
-        if st.button("\U0001f464 Update My Profile", use_container_width=True):
+        if st.button("Update My Profile", use_container_width=True):
             st.info("Go to \'My Profile\' in the sidebar!")
 
 # ================================
 # NEW LISTING PAGE
 # ================================
-elif page == "\u270d\ufe0f New Listing":
+elif page == "New Listing":
     st.title("Submit New Listing")
     st.write("Fill in the details below. Claude will write your personalised listing automatically.")
 
@@ -583,7 +592,7 @@ elif page == "\u270d\ufe0f New Listing":
         features = st.text_area("Special Features", placeholder="e.g. Private pool, 3-car garage, newly renovated")
         sg_citizen = st.checkbox("I confirm the buyer is a Singapore Citizen (required for GCB purchases)")
         declaration = st.checkbox("I confirm all details are accurate and truthful.")
-        submitted = st.form_submit_button("\U0001f916 Generate My Listing Automatically", use_container_width=True)
+        submitted = st.form_submit_button("Generate My Listing Automatically", use_container_width=True)
 
     if submitted:
         if not declaration:
@@ -652,11 +661,11 @@ elif page == "\u270d\ufe0f New Listing":
                     passed.append("Buyer confirmed as Singapore Citizen — eligible for GCB purchase")
 
             for p in passed:
-                st.success(f"\u2705 {p}")
+                st.success(f"✅ {p}")
             for w in warnings:
-                st.warning(f"\u26a0\ufe0f {w}")
+                st.warning(f"⚠️ {w}")
             for i in issues:
-                st.error(f"\u274c {i}")
+                st.error(f"❌ {i}")
 
             if not issues:
                 st.markdown("---")
@@ -698,21 +707,21 @@ Write:
                     save_listing(agent["id"], location, price, property_type, listing_text)
 
                     st.markdown("---")
-                    st.subheader("Step 3 — Your Listing is Ready! \U0001f389")
+                    st.subheader("Step 3 — Your Listing is Ready!")
                     st.markdown(listing_text)
-                    st.success("\u2705 Listing saved to My Listings!")
+                    st.success("Listing saved to My Listings!")
 
                     st.markdown("---")
-                    st.subheader("Step 4 — Post to Facebook \U0001f4d8")
+                    st.subheader("Step 4 — Post to Facebook")
                     st.info("Your listing is ready to post to the NestList Facebook Page!")
-                    if st.button("\U0001f4d8 Post to NestList Facebook Page Now", use_container_width=True):
+                    if st.button("Post to NestList Facebook Page Now", use_container_width=True):
                         with st.spinner("Posting to Facebook..."):
                             success, result = post_to_facebook(listing_text, location, price, property_type)
                         if success:
-                            st.success(f"\u2705 Successfully posted to Facebook! Post ID: {result}")
+                            st.success(f"Successfully posted to Facebook! Post ID: {result}")
                             st.balloons()
                         else:
-                            st.error(f"\u274c Facebook post failed: {result}")
+                            st.error(f"Facebook post failed: {result}")
 
                 except Exception as e:
                     st.error(f"Error generating listing: {str(e)}")
@@ -720,39 +729,39 @@ Write:
 # ================================
 # MY LISTINGS PAGE
 # ================================
-elif page == "\U0001f3e1 My Listings":
+elif page == "My Listings":
     st.title("My Listings")
     listings = get_agent_listings(agent["id"])
     if listings:
         st.write(f"You have {len(listings)} listing(s).")
         st.markdown("---")
         for i, listing in enumerate(listings):
-            with st.expander(f"\U0001f3e1 {listing['location']} — SGD {listing['price']} | {listing['created_at'][:10]}"):
+            with st.expander(f"{listing['location']} — SGD {listing['price']} | {listing['created_at'][:10]}"):
                 st.markdown(listing["content"])
-                if st.button(f"\U0001f4d8 Post to Facebook", key=f"fb_post_{i}"):
+                if st.button(f"Post to Facebook", key=f"fb_post_{i}"):
                     with st.spinner("Posting to Facebook..."):
                         success, result = post_to_facebook(
                             listing["content"], listing["location"],
                             listing["price"], listing["property_type"]
                         )
                     if success:
-                        st.success(f"\u2705 Posted to Facebook! Post ID: {result}")
+                        st.success(f"Posted to Facebook! Post ID: {result}")
                     else:
-                        st.error(f"\u274c Failed: {result}")
+                        st.error(f"Failed: {result}")
     else:
         st.info("No listings yet! Go to \'New Listing\' to create your first one.")
 
 # ================================
 # ENQUIRIES PAGE
 # ================================
-elif page == "\U0001f4ac Enquiries":
+elif page == "Enquiries":
     st.title("Buyer Enquiries")
-    st.info("\U0001f51c Coming soon — buyer enquiries and AI auto-replies will appear here!")
+    st.info("Coming soon — buyer enquiries and AI auto-replies will appear here!")
 
 # ================================
 # MY PROFILE PAGE
 # ================================
-elif page == "\U0001f464 My Profile":
+elif page == "My Profile":
     st.title("My Profile & Style Settings")
     st.subheader("Agent Details")
     col1, col2 = st.columns(2)
@@ -781,14 +790,14 @@ elif page == "\U0001f464 My Profile":
     signature = st.text_area("My Signature Phrase", value=agent["signature"], height=100)
 
     st.markdown("---")
-    if st.button("\U0001f4be Save My Style Settings", use_container_width=True):
+    if st.button("Save My Style Settings", use_container_width=True):
         profile_data = {
             "name": name, "agency": agency, "specialty": specialty,
             "tone": tone, "emphasis": emphasis, "signature": signature, "contact": contact
         }
         if update_agent_profile(agent["id"], profile_data):
             st.session_state.agent.update(profile_data)
-            st.success("\u2705 Profile saved!")
+            st.success("Profile saved!")
             st.balloons()
         else:
             st.error("Error saving profile.")
@@ -796,7 +805,7 @@ elif page == "\U0001f464 My Profile":
 # ================================
 # BILLING PAGE
 # ================================
-elif page == "\U0001f4b3 Billing":
+elif page == "Billing":
     st.title("Billing & Subscription")
     st.markdown("""
     <div style="background:#0E2820; border:1px solid rgba(212,175,55,0.3); border-radius:4px; padding:24px; margin-bottom:16px;">
@@ -804,4 +813,4 @@ elif page == "\U0001f4b3 Billing":
         <div style="color:#D4AF37; font-size:20px; margin-top:6px; font-family:'Bodoni Moda',serif;">SGD 149 <span style="font-size:12px; opacity:0.6;">/ month</span></div>
     </div>
     """, unsafe_allow_html=True)
-    st.info("\U0001f51c Stripe payment integration coming soon!")
+    st.info("Stripe payment integration coming soon!")
