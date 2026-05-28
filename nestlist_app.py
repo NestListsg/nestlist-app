@@ -270,6 +270,16 @@ html, body, [class*="css"] { font-family: 'Montserrat', sans-serif; }
     font-family: 'Montserrat', sans-serif !important;
     font-size: 12px !important;
 }
+
+/* LOGIN PAGE — make text visible on dark green */
+.stApp h3 { color: #F8F4EC !important; }
+.stApp h2 { color: #F8F4EC !important; }
+.stTextInput label { color: rgba(248,244,236,0.8) !important; font-size: 11px !important; letter-spacing: 0.08em !important; }
+.stTextInput p { color: rgba(248,244,236,0.8) !important; }
+.stApp [data-testid="stMarkdownContainer"] p { color: rgba(248,244,236,0.7) !important; }
+div[data-testid="stSubheader"] { color: #F8F4EC !important; }
+.stTabs [data-baseweb="tab"] { color: rgba(248,244,236,0.6) !important; }
+.stTabs [aria-selected="true"] { color: #D4AF37 !important; border-bottom: 1px solid #D4AF37 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -395,8 +405,8 @@ if "agent" not in st.session_state:
 if st.session_state.agent is None:
     st.markdown(f"""
     <div style="text-align:center; padding: 48px 0 24px;">
-        <img src="data:image/png;base64,{LOGO_B64}" width="120" style="object-fit:contain; margin-bottom:16px;">
-        <div style="font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(212,175,55,0.5); margin-top:4px;">
+        <img src="data:image/png;base64,{LOGO_B64}" width="160" style="object-fit:contain; margin-bottom:16px;">
+        <div style="font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(212,175,55,0.9); margin-top:4px; font-size:12px;">
             Smarter Listings. Better Results.
         </div>
     </div>
