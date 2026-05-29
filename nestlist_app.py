@@ -38,8 +38,10 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     border-right: 1px solid rgba(212,175,55,0.35) !important;
     width: 250px !important;
 }
-[data-testid="stSidebar"] > div { padding: 0 !important; }
-[data-testid="stSidebarContent"] { padding: 0 !important; }
+[data-testid="stSidebar"] > div { padding: 0 !important; margin-top: 0 !important; }
+[data-testid="stSidebarContent"] { padding: 0 !important; margin-top: 0 !important; }
+[data-testid="stSidebar"] > div > div { padding-top: 0 !important; margin-top: 0 !important; }
+[data-testid="stSidebar"] section { padding-top: 0 !important; }
 
 /* SIDEBAR NAV - hide dots completely */
 [data-testid="stSidebar"] input[type="radio"] { display: none !important; }
@@ -66,16 +68,18 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
 /* SIDEBAR LOGOUT BUTTON */
 [data-testid="stSidebar"] .stButton > button {
     background: transparent !important;
-    border: 1px solid rgba(212,175,55,0.3) !important;
+    border: none !important;
+    border-top: 0.5px solid rgba(212,175,55,0.2) !important;
     color: rgba(248,244,236,0.5) !important;
-    border-radius: 2px !important;
-    font-size: 13px !important;
-    letter-spacing: 0.08em !important;
+    border-radius: 0 !important;
+    font-size: 15px !important;
+    letter-spacing: 0.04em !important;
     font-weight: 400 !important;
-    padding: 10px 16px !important;
+    padding: 12px 18px !important;
     font-family: 'Montserrat', sans-serif !important;
-    margin: 8px 12px !important;
-    width: calc(100% - 24px) !important;
+    margin: 0 !important;
+    width: 100% !important;
+    text-align: left !important;
 }
 
 /* MAIN CONTENT BUTTONS */
@@ -385,7 +389,7 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-st.sidebar.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+st.sidebar.markdown("<div style='flex:1;'></div>", unsafe_allow_html=True)
 if st.sidebar.button("Logout", use_container_width=True):
     st.session_state.agent = None
     st.rerun()
