@@ -19,159 +19,67 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Bodoni+Moda:opsz,wght@6..96,300;400&family=Montserrat:wght@300;400;500;600&display=swap');
 
-html, body, [class*="css"] { font-family: 'Montserrat', sans-serif; }
-.stApp { background: #0E2820; }
+/* RESET & GLOBAL */
+html, body, [class*="css"] { font-family: 'Montserrat', sans-serif !important; }
+.stApp { background: #0E2820 !important; }
 .main .block-container { padding: 0 !important; max-width: 100% !important; }
 
-#MainMenu { visibility: hidden !important; display: none !important; }
-footer { visibility: hidden !important; display: none !important; }
-header { visibility: hidden !important; display: none !important; height: 0 !important; min-height: 0 !important; }
-[data-testid="stToolbar"] { display: none !important; height: 0 !important; }
-[data-testid="stDecoration"] { display: none !important; height: 0 !important; }
-[data-testid="stStatusWidget"] { display: none !important; }
+/* HIDE STREAMLIT UI */
+#MainMenu, footer, header, [data-testid="stToolbar"],
+[data-testid="stDecoration"], [data-testid="stStatusWidget"],
 [data-testid="stHeader"] { display: none !important; height: 0 !important; }
 .stApp > header { display: none !important; height: 0 !important; }
-div[data-testid="stAppViewBlockContainer"] { padding-top: 0 !important; }
+section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
+.block-container { padding-top: 0 !important; }
 
+/* SIDEBAR */
 [data-testid="stSidebar"] {
     background: #071910 !important;
-    min-width: 250px !important;
-    border-right: 1px solid rgba(212,175,55,0.3) !important;
+    border-right: 1px solid rgba(212,175,55,0.35) !important;
+    width: 250px !important;
 }
 [data-testid="stSidebar"] > div { padding: 0 !important; }
 [data-testid="stSidebarContent"] { padding: 0 !important; }
 
-.nl-header {
-    background: #071910;
-    padding: 18px 28px;
-    border-bottom: 1px solid rgba(212,175,55,0.3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* SIDEBAR NAV - hide dots completely */
+[data-testid="stSidebar"] input[type="radio"] { display: none !important; }
+[data-testid="stSidebar"] .stRadio > div { gap: 0 !important; }
+[data-testid="stSidebar"] .stRadio > div > label > div:first-child { display: none !important; }
+[data-testid="stSidebar"] .stRadio label {
+    font-size: 15px !important;
+    color: rgba(248,244,236,0.65) !important;
+    letter-spacing: 0.04em !important;
+    padding: 12px 18px !important;
+    border-radius: 0 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    border-left: 2px solid transparent !important;
+    display: block !important;
+    width: 100% !important;
 }
-.nl-brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 400;
-    letter-spacing: 0.22em;
-    color: #F8F4EC;
-    line-height: 1;
-}
-.nl-brand-gold { color: #D4AF37; }
-.nl-prestige {
-    font-size: 13px;
-    color: rgba(212,175,55,0.9);
-    margin-left: 12px;
-    font-weight: 300;
-    letter-spacing: 0.2em;
-    vertical-align: middle;
-}
-.nl-tagline {
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    margin-top: 6px;
-    color: rgba(212,175,55,0.8);
-}
-.nl-avatar {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    border: 1.5px solid #D4AF37;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #D4AF37;
-    font-size: 15px;
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 500;
-    margin-right: 10px;
-}
-.nl-agent-name { color: rgba(248,244,236,0.8); font-size: 15px; }
-
-.nl-accent {
-    height: 1px;
-    background: linear-gradient(to right, transparent 0%, #D4AF37 25%, #D4AF37 75%, transparent 100%);
-    opacity: 0.6;
+[data-testid="stSidebar"] .stRadio label:has(input:checked) {
+    background: rgba(212,175,55,0.12) !important;
+    color: #F8F4EC !important;
+    border-left: 2px solid #D4AF37 !important;
+    font-weight: 500 !important;
 }
 
-.nl-welcome {
-    background: #163D2E;
-    padding: 15px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(0,0,0,0.2);
-}
-.nl-welcome-text { color: rgba(248,244,236,0.95); font-size: 15px; letter-spacing: 0.02em; }
-.nl-welcome-text strong { color: #F8F4EC; font-weight: 600; }
-.nl-badge {
-    border: 1px solid #D4AF37;
-    color: #D4AF37;
-    font-size: 11px;
-    padding: 5px 16px;
-    border-radius: 2px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    font-weight: 500;
+/* SIDEBAR LOGOUT BUTTON */
+[data-testid="stSidebar"] .stButton > button {
+    background: transparent !important;
+    border: 1px solid rgba(212,175,55,0.3) !important;
+    color: rgba(248,244,236,0.5) !important;
+    border-radius: 2px !important;
+    font-size: 13px !important;
+    letter-spacing: 0.08em !important;
+    font-weight: 400 !important;
+    padding: 10px 16px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    margin: 8px 12px !important;
+    width: calc(100% - 24px) !important;
 }
 
-.nl-card {
-    background: rgba(255,255,255,0.06);
-    border-radius: 4px;
-    padding: 18px 20px;
-    border: 0.5px solid rgba(212,175,55,0.35);
-    border-top: 2px solid #D4AF37;
-    text-align: left;
-}
-.nl-card-num {
-    font-family: 'Bodoni Moda', serif;
-    font-size: 52px;
-    font-weight: 300;
-    color: #F8F4EC;
-    line-height: 1;
-}
-.nl-card-label {
-    font-size: 10px;
-    margin-top: 6px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(212,175,55,0.95);
-}
-
-.nl-panel {
-    background: rgba(255,255,255,0.05);
-    border-radius: 4px;
-    padding: 20px 22px;
-    border: 0.5px solid rgba(212,175,55,0.25);
-}
-.nl-panel-title {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(212,175,55,0.95);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.nl-panel-title::before {
-    content: '';
-    display: inline-block;
-    width: 20px;
-    height: 1.5px;
-    background: #D4AF37;
-}
-
-.nl-listing-item {
-    font-size: 14px;
-    color: rgba(248,244,236,0.8);
-    padding: 9px 0;
-    border-bottom: 0.5px solid rgba(212,175,55,0.15);
-    letter-spacing: 0.02em;
-}
-
-.stButton > button {
+/* MAIN CONTENT BUTTONS */
+.main .stButton > button {
     background: transparent !important;
     border: 1px solid rgba(212,175,55,0.6) !important;
     color: rgba(212,175,55,0.9) !important;
@@ -183,11 +91,11 @@ div[data-testid="stAppViewBlockContainer"] { padding-top: 0 !important; }
     padding: 12px 16px !important;
     font-family: 'Montserrat', sans-serif !important;
 }
-.stButton > button:hover {
+.main .stButton > button:hover {
     background: rgba(212,175,55,0.1) !important;
-    color: #D4AF37 !important;
 }
 
+/* INPUTS */
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stSelectbox > div > div {
@@ -197,8 +105,15 @@ div[data-testid="stAppViewBlockContainer"] { padding-top: 0 !important; }
     font-family: 'Montserrat', sans-serif !important;
     color: #0E2820 !important;
 }
+.stTextInput label, .stTextArea label, .stSelectbox label,
+.stNumberInput label, .stCheckbox label {
+    color: rgba(248,244,236,0.85) !important;
+    font-size: 12px !important;
+    letter-spacing: 0.05em !important;
+}
 
-.stTabs [data-baseweb="tab-list"] { background: transparent; gap: 4px; }
+/* TABS */
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; gap: 4px !important; }
 .stTabs [data-baseweb="tab"] {
     color: rgba(248,244,236,0.6) !important;
     font-family: 'Montserrat', sans-serif !important;
@@ -214,72 +129,11 @@ div[data-testid="stAppViewBlockContainer"] { padding-top: 0 !important; }
     border-bottom: 1px solid #D4AF37 !important;
 }
 
-.nl-sb-logo {
-    padding: 24px 16px 18px;
-    border-bottom: 1px solid rgba(212,175,55,0.3);
-    text-align: center;
-}
-.nl-sb-tagline {
-    font-size: 9px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(212,175,55,0.7);
-    margin-top: 8px;
-    white-space: nowrap;
-}
-.nl-sb-agent {
-    background: rgba(212,175,55,0.1);
-    border-left: 2px solid #D4AF37;
-    padding: 14px 14px;
-    margin: 18px 14px;
-    border-radius: 0 4px 4px 0;
-}
-.nl-sb-agent-name {
-    color: #F8F4EC;
-    font-size: 18px;
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-}
-.nl-sb-agent-spec {
-    color: rgba(212,175,55,0.9);
-    font-size: 11px;
-    margin-top: 4px;
-    letter-spacing: 0.04em;
-    line-height: 1.5;
-}
-.nl-sb-nav-label {
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 4px 20px 8px;
-    color: rgba(212,175,55,0.9);
-    font-weight: 500;
-}
-
-[data-testid="stSidebar"] .stRadio > div { gap: 0 !important; }
-[data-testid="stSidebar"] .stRadio label {
-    font-size: 14px !important;
-    color: rgba(248,244,236,0.65) !important;
-    letter-spacing: 0.04em !important;
-    padding: 11px 16px !important;
-    border-radius: 4px !important;
-    font-family: 'Montserrat', sans-serif !important;
-    border-left: 2px solid transparent !important;
-}
-[data-testid="stSidebar"] .stRadio label:has(input:checked) {
-    background: rgba(212,175,55,0.14) !important;
-    color: #F8F4EC !important;
-    border-left: 2px solid #D4AF37 !important;
-    font-weight: 500 !important;
-}
-[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p { color: inherit !important; }
-[data-testid="stSidebar"] input[type="radio"] { display: none !important; }
-[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child { display: none !important; }
-
+/* TEXT */
+h1, h2, h3, h4 { color: #F8F4EC !important; }
+p { color: rgba(248,244,236,0.8) !important; }
 .stSuccess { border-left: 3px solid #D4AF37 !important; background: rgba(212,175,55,0.08) !important; }
 .stError { border-left: 3px solid #8B2020 !important; }
-
 .streamlit-expanderHeader {
     background: rgba(255,255,255,0.05) !important;
     border: 0.5px solid rgba(212,175,55,0.2) !important;
@@ -288,17 +142,6 @@ div[data-testid="stAppViewBlockContainer"] { padding-top: 0 !important; }
     font-family: 'Montserrat', sans-serif !important;
     font-size: 13px !important;
 }
-
-.stTextInput label, .stTextArea label, .stSelectbox label, .stNumberInput label, .stCheckbox label {
-    color: rgba(248,244,236,0.85) !important;
-    font-size: 12px !important;
-    letter-spacing: 0.05em !important;
-}
-div[data-testid="stSubheader"], div[data-testid="stMarkdownContainer"] h3 {
-    color: #F8F4EC !important;
-}
-h1, h2, h3 { color: #F8F4EC !important; }
-p { color: rgba(248,244,236,0.8) !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -415,6 +258,7 @@ def update_agent_profile(agent_id, profile_data):
     except:
         return False
 
+
 # ================================
 # LOGIN / REGISTER PAGE
 # ================================
@@ -424,7 +268,7 @@ if "agent" not in st.session_state:
 if st.session_state.agent is None:
     st.markdown(f"""
     <div style="text-align:center; padding: 48px 0 24px;">
-        <img src="data:image/png;base64,{LOGO_B64}" width="160" style="object-fit:contain; margin-bottom:12px;">
+        <img src="data:image/png;base64,{LOGO_B64}" width="180" style="object-fit:contain; margin-bottom:12px;">
         <div style="font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(212,175,55,0.9); margin-top:4px; font-family:Montserrat,sans-serif;">
             Smarter Listings. Better Results.
         </div>
@@ -485,35 +329,55 @@ if st.session_state.agent is None:
 agent = st.session_state.agent
 initials = "".join([n[0] for n in agent["name"].split()[:2]]).upper()
 
+# TOP HEADER
 st.markdown(f"""
-<div class="nl-header">
+<div style="background:#071910; padding:18px 28px; border-bottom:1px solid rgba(212,175,55,0.35);
+    display:flex; justify-content:space-between; align-items:center;">
     <div>
-        <div class="nl-brand">NEST<span class="nl-brand-gold">LIST</span><span class="nl-prestige">PRESTIGE</span></div>
-        <div class="nl-tagline">Singapore's AI-Powered Property Platform</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:400;
+            letter-spacing:0.22em; color:#F8F4EC; line-height:1;">
+            NEST<span style="color:#D4AF37;">LIST</span>
+            <span style="font-size:13px; color:rgba(212,175,55,0.9); margin-left:12px;
+                font-weight:300; letter-spacing:0.2em; font-family:Montserrat,sans-serif;">PRESTIGE</span>
+        </div>
+        <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+            margin-top:6px; color:rgba(212,175,55,0.8);">Singapore's AI-Powered Property Platform</div>
     </div>
-    <div style="display:flex; align-items:center;">
-        <div class="nl-avatar">{initials}</div>
-        <div class="nl-agent-name">{agent["name"]}</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:42px; height:42px; border-radius:50%; border:1.5px solid #D4AF37;
+            display:flex; align-items:center; justify-content:center; color:#D4AF37;
+            font-size:15px; font-family:'Cormorant Garamond',serif; font-weight:500;">{initials}</div>
+        <div style="color:rgba(248,244,236,0.8); font-size:15px;">{agent["name"]}</div>
     </div>
 </div>
-<div class="nl-accent"></div>
-<div class="nl-welcome">
-    <div class="nl-welcome-text">Welcome back, <strong>{agent["name"]}</strong> &nbsp;&middot;&nbsp; {agent["specialty"]}</div>
-    <div class="nl-badge">Prestige</div>
+<div style="height:1px; background:linear-gradient(to right, transparent 0%, #D4AF37 25%, #D4AF37 75%, transparent 100%); opacity:0.6;"></div>
+<div style="background:#163D2E; padding:15px 28px; display:flex; justify-content:space-between;
+    align-items:center; border-bottom:1px solid rgba(0,0,0,0.2);">
+    <div style="color:rgba(248,244,236,0.95); font-size:15px; letter-spacing:0.02em;">
+        Welcome back, <strong style="color:#F8F4EC; font-weight:600;">{agent["name"]}</strong>
+        &nbsp;&middot;&nbsp; {agent["specialty"]}
+    </div>
+    <div style="border:1px solid #D4AF37; color:#D4AF37; font-size:11px; padding:5px 16px;
+        border-radius:2px; letter-spacing:0.2em; text-transform:uppercase; font-weight:500;">Prestige</div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sidebar
+# SIDEBAR
 st.sidebar.markdown(f"""
-<div class="nl-sb-logo">
+<div style="padding:24px 16px 18px; border-bottom:1px solid rgba(212,175,55,0.3); text-align:center;">
     <img src="data:image/png;base64,{LOGO_B64}" width="180" style="object-fit:contain; display:block; margin:0 auto;">
-    <div class="nl-sb-tagline">Smarter Listings. Better Results.</div>
+    <div style="font-size:9px; letter-spacing:0.14em; text-transform:uppercase;
+        color:rgba(212,175,55,0.75); margin-top:8px; white-space:nowrap;">Smarter Listings. Better Results.</div>
 </div>
-<div class="nl-sb-agent">
-    <div class="nl-sb-agent-name">{agent["name"]}</div>
-    <div class="nl-sb-agent-spec">{agent["specialty"]}</div>
+<div style="background:rgba(212,175,55,0.1); border-left:2px solid #D4AF37;
+    padding:14px; margin:18px 14px; border-radius:0 4px 4px 0;">
+    <div style="color:#F8F4EC; font-size:18px; font-family:'Cormorant Garamond',serif;
+        font-weight:500; letter-spacing:0.05em;">{agent["name"]}</div>
+    <div style="color:rgba(212,175,55,0.9); font-size:11px; margin-top:4px;
+        letter-spacing:0.04em; line-height:1.5;">{agent["specialty"]}</div>
 </div>
-<div class="nl-sb-nav-label">Navigation</div>
+<div style="font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+    padding:4px 20px 8px; color:rgba(212,175,55,0.9); font-weight:500;">Navigation</div>
 """, unsafe_allow_html=True)
 
 page = st.sidebar.radio(
@@ -521,8 +385,7 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-st.sidebar.markdown("---")
-st.sidebar.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
+st.sidebar.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
 if st.sidebar.button("Logout", use_container_width=True):
     st.session_state.agent = None
     st.rerun()
@@ -534,87 +397,107 @@ if page == "Dashboard":
     listings = get_agent_listings(agent["id"])
     total_listings = len(listings)
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown(f'<div class="nl-card"><div class="nl-card-num">{total_listings}</div><div class="nl-card-label">Active Listings</div></div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="nl-card"><div class="nl-card-num">0</div><div class="nl-card-label">Total Enquiries</div></div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="nl-card"><div class="nl-card-num">0</div><div class="nl-card-label">Total Views</div></div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="nl-card"><div class="nl-card-num">0</div><div class="nl-card-label">Serious Buyers</div></div>', unsafe_allow_html=True)
+    st.markdown("""<div style="font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+        color:rgba(212,175,55,0.9); padding:20px 0 14px; font-weight:500;">Dashboard Overview</div>""",
+        unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    card_style = "background:rgba(255,255,255,0.06); border-radius:4px; padding:18px 20px; border:0.5px solid rgba(212,175,55,0.35); border-top:2px solid #D4AF37; text-align:left;"
+    num_style = "font-family:'Bodoni Moda',serif; font-size:52px; font-weight:300; color:#F8F4EC; line-height:1;"
+    lbl_style = "font-size:10px; margin-top:6px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(212,175,55,0.95);"
+    with col1:
+        st.markdown(f'<div style="{card_style}"><div style="{num_style}">{total_listings}</div><div style="{lbl_style}">Active Listings</div></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown(f'<div style="{card_style}"><div style="{num_style}">0</div><div style="{lbl_style}">Total Enquiries</div></div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown(f'<div style="{card_style}"><div style="{num_style}">0</div><div style="{lbl_style}">Total Views</div></div>', unsafe_allow_html=True)
+    with col4:
+        st.markdown(f'<div style="{card_style}"><div style="{num_style}">0</div><div style="{lbl_style}">Serious Buyers</div></div>', unsafe_allow_html=True)
+
+    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
     col_left, col_right = st.columns(2)
+    panel_style = "background:rgba(255,255,255,0.05); border-radius:4px; padding:20px 22px; border:0.5px solid rgba(212,175,55,0.25);"
+    title_style = "font-size:12px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:rgba(212,175,55,0.95); margin-bottom:14px; display:flex; align-items:center; gap:10px;"
+    line_style = "display:inline-block; width:20px; height:1.5px; background:#D4AF37; margin-right:4px;"
+
     with col_left:
         if listings:
-            items_html = "".join([f'<div class="nl-listing-item">{l["location"]} &mdash; SGD {l["price"]}</div>' for l in listings[:3]])
+            items_html = "".join([f'<div style="font-size:14px; color:rgba(248,244,236,0.8); padding:9px 0; border-bottom:0.5px solid rgba(212,175,55,0.15);">{l["location"]} &mdash; SGD {l["price"]}</div>' for l in listings[:3]])
         else:
-            items_html = '<p style="color:rgba(248,244,236,0.4); font-size:13px; font-style:italic; padding:8px 0;">No listings yet. Go to New Listing to begin.</p>'
-        st.markdown(f'<div class="nl-panel"><div class="nl-panel-title">Recent Listings</div>{items_html}</div>', unsafe_allow_html=True)
+            items_html = '<div style="font-size:13px; color:rgba(248,244,236,0.4); font-style:italic; padding:8px 0;">No listings yet. Go to New Listing to begin.</div>'
+        st.markdown(f'<div style="{panel_style}"><div style="{title_style}"><span style="{line_style}"></span>Recent Listings</div>{items_html}</div>', unsafe_allow_html=True)
 
     with col_right:
-        st.markdown('''<div class="nl-panel">
-            <div class="nl-panel-title">Quick Actions</div>
-            <div style="display:flex; flex-direction:column; gap:14px; padding-top:8px;">
-                <div style="border:1px solid rgba(212,175,55,0.6); color:rgba(212,175,55,0.9); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; padding:13px 16px; border-radius:2px; text-align:center; font-family:Montserrat,sans-serif; font-weight:500; cursor:pointer;">Create New Listing</div>
-                <div style="border:1px solid rgba(212,175,55,0.6); color:rgba(212,175,55,0.9); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; padding:13px 16px; border-radius:2px; text-align:center; font-family:Montserrat,sans-serif; font-weight:500; cursor:pointer;">Update My Profile</div>
+        btn_style = "border:1px solid rgba(212,175,55,0.6); color:rgba(212,175,55,0.9); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; padding:13px 16px; border-radius:2px; text-align:center; font-family:Montserrat,sans-serif; font-weight:500; cursor:pointer; margin-bottom:14px;"
+        st.markdown(f'''<div style="{panel_style}">
+            <div style="{title_style}"><span style="{line_style}"></span>Quick Actions</div>
+            <div style="display:flex; flex-direction:column; gap:14px; padding-top:4px;">
+                <div style="{btn_style}">Create New Listing</div>
+                <div style="{btn_style}">Update My Profile</div>
             </div>
         </div>''', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    col_hero, col_market = st.columns(2)
+    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
+    col_hero, col_market = st.columns(2)
     with col_hero:
         st.markdown(f"""
-        <div style="border-radius:4px; overflow:hidden; position:relative; min-height:280px;
-            background-image: url('data:image/webp;base64,{HERO_B64}');
+        <div style="border-radius:4px; overflow:hidden; position:relative; min-height:400px;
+            background-image:url('data:image/webp;base64,{HERO_B64}');
             background-size:cover; background-position:center;
-            border: 0.5px solid rgba(212,175,55,0.25); display:flex; flex-direction:column; justify-content:flex-end; padding:24px; min-height:400px;">
-            <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(7,25,16,0.88) 0%, rgba(7,25,16,0.2) 40%, rgba(7,25,16,0.05) 100%);"></div>
+            border:0.5px solid rgba(212,175,55,0.25); display:flex;
+            flex-direction:column; justify-content:flex-end; padding:28px;">
+            <div style="position:absolute; inset:0; background:linear-gradient(to top,
+                rgba(7,25,16,0.88) 0%, rgba(7,25,16,0.2) 45%, rgba(7,25,16,0.05) 100%);"></div>
             <div style="position:relative; z-index:2;">
                 <div style="width:40px; height:1px; background:#D4AF37; margin-bottom:14px;"></div>
-                <div style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; color:#F8F4EC; letter-spacing:0.06em; line-height:1.3; margin-bottom:8px;">
+                <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300;
+                    color:#F8F4EC; letter-spacing:0.06em; line-height:1.3; margin-bottom:10px;">
                     Where Singapore's Finest<br>Properties Find Their <span style="color:#D4AF37;">Buyers</span>
                 </div>
-                <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(212,175,55,0.8);">
-                    NestList Prestige &nbsp;&middot;&nbsp; Est. 2026
-                </div>
+                <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
+                    color:rgba(212,175,55,0.8);">NestList Prestige &nbsp;&middot;&nbsp; Est. 2026</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
     with col_market:
         st.markdown("""
-        <div style="background:rgba(255,255,255,0.05); border:0.5px solid rgba(212,175,55,0.25); border-radius:4px; padding:20px 22px; min-height:400px; display:flex; flex-direction:column;">
-            <div style="font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(212,175,55,0.95); margin-bottom:16px; display:flex; align-items:center; gap:10px; font-weight:500;">
+        <div style="background:rgba(255,255,255,0.05); border:0.5px solid rgba(212,175,55,0.25);
+            border-radius:4px; padding:20px 22px; min-height:400px; display:flex; flex-direction:column;">
+            <div style="font-size:12px; letter-spacing:0.2em; text-transform:uppercase;
+                color:rgba(212,175,55,0.95); margin-bottom:16px; display:flex; align-items:center;
+                gap:10px; font-weight:500;">
                 <span style="display:inline-block; width:20px; height:1.5px; background:#D4AF37;"></span>
                 Singapore Market Pulse
             </div>
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
+            <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
                 <div style="font-size:13px; color:rgba(248,244,236,0.65);">GCB Transactions 2025</div>
-                <div style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#D4AF37;">~36 units</div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:20px; color:#D4AF37;">~36 units</div>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
+            <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
                 <div style="font-size:13px; color:rgba(248,244,236,0.65);">Total GCB Value 2025</div>
-                <div style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#D4AF37;">SGD 1.36B</div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:20px; color:#D4AF37;">SGD 1.36B</div>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
+            <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
                 <div style="font-size:13px; color:rgba(248,244,236,0.65);">Avg. GCB Price psf 2025</div>
-                <div style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#D4AF37;">SGD 2,134</div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:20px; color:#D4AF37;">SGD 2,134</div>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
+            <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
                 <div style="font-size:13px; color:rgba(248,244,236,0.65);">Largest 2025 Transaction</div>
-                <div style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#D4AF37;">SGD 148M</div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:20px; color:#D4AF37;">SGD 148M</div>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
+            <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:0.5px solid rgba(212,175,55,0.1);">
                 <div style="font-size:13px; color:rgba(248,244,236,0.65);">Nassim Road Price Range</div>
-                <div style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#D4AF37;">SGD 2,500–4,000 psf</div>
+                <div style="font-family:'Cormorant Garamond',serif; font-size:20px; color:#D4AF37;">SGD 2,500–4,000 psf</div>
             </div>
             <div style="margin-top:auto; padding-top:16px; border-top:0.5px solid rgba(212,175,55,0.15);">
                 <div style="font-size:10px; color:rgba(212,175,55,0.7); letter-spacing:0.04em; line-height:1.7;">
-                    <strong style="color:rgba(212,175,55,0.85);">&#9432; Disclaimer:</strong> Data sourced from URA Realis &amp; EdgeProp Singapore. Figures are indicative and updated periodically. NestList does not warrant the accuracy of market data. Always verify with URA or a licensed professional before making property decisions.
+                    <strong style="color:rgba(212,175,55,0.85);">&#9432; Disclaimer:</strong>
+                    Data sourced from URA Realis &amp; EdgeProp Singapore. Figures are indicative and updated
+                    periodically. NestList does not warrant the accuracy of market data. Always verify with URA
+                    or a licensed professional before making property decisions.
                 </div>
                 <div style="font-size:9px; color:rgba(212,175,55,0.4); margin-top:6px; letter-spacing:0.04em;">
                     Source: URA Realis / EdgeProp &nbsp;|&nbsp; Last updated: Jan 2026 &nbsp;|&nbsp; Live URA API coming soon
