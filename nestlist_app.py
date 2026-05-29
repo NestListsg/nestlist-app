@@ -540,21 +540,20 @@ if page == "Dashboard":
 
     col_left, col_right = st.columns(2)
     with col_left:
-        st.markdown('<div class="nl-panel"><div class="nl-panel-title">Recent Listings</div></div>', unsafe_allow_html=True)
         if listings:
-            for listing in listings[:3]:
-                st.markdown(f'<div class="nl-listing-item">{listing["location"]} &mdash; SGD {listing["price"]}</div>', unsafe_allow_html=True)
+            items_html = "".join([f'<div class="nl-listing-item">{l["location"]} &mdash; SGD {l["price"]}</div>' for l in listings[:3]])
         else:
-            st.markdown('<p style="color:rgba(248,244,236,0.4); font-size:13px; font-style:italic; padding:8px 0;">No listings yet. Go to New Listing to begin.</p>', unsafe_allow_html=True)
+            items_html = '<p style="color:rgba(248,244,236,0.4); font-size:13px; font-style:italic; padding:8px 0;">No listings yet. Go to New Listing to begin.</p>'
+        st.markdown(f'<div class="nl-panel"><div class="nl-panel-title">Recent Listings</div>{items_html}</div>', unsafe_allow_html=True)
 
     with col_right:
-        st.markdown('<div class="nl-panel"><div class="nl-panel-title">Quick Actions</div></div>', unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Create New Listing", use_container_width=True):
-            st.info("Go to New Listing in the sidebar.")
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Update My Profile", use_container_width=True):
-            st.info("Go to My Profile in the sidebar.")
+        st.markdown('''<div class="nl-panel">
+            <div class="nl-panel-title">Quick Actions</div>
+            <div style="display:flex; flex-direction:column; gap:14px; padding-top:8px;">
+                <div style="border:1px solid rgba(212,175,55,0.6); color:rgba(212,175,55,0.9); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; padding:13px 16px; border-radius:2px; text-align:center; font-family:Montserrat,sans-serif; font-weight:500; cursor:pointer;">Create New Listing</div>
+                <div style="border:1px solid rgba(212,175,55,0.6); color:rgba(212,175,55,0.9); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; padding:13px 16px; border-radius:2px; text-align:center; font-family:Montserrat,sans-serif; font-weight:500; cursor:pointer;">Update My Profile</div>
+            </div>
+        </div>''', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     col_hero, col_market = st.columns(2)
