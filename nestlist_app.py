@@ -23,15 +23,19 @@ html, body, [class*="css"] { font-family: 'Montserrat', sans-serif; }
 .stApp { background: #0E2820; }
 .main .block-container { padding: 0 !important; max-width: 100% !important; }
 
-#MainMenu { visibility: hidden !important; }
-footer { visibility: hidden !important; }
-header { visibility: hidden !important; }
-[data-testid="stToolbar"] { display: none !important; }
-[data-testid="stDecoration"] { display: none !important; }
+#MainMenu { visibility: hidden !important; display: none !important; }
+footer { visibility: hidden !important; display: none !important; }
+header { visibility: hidden !important; display: none !important; height: 0 !important; min-height: 0 !important; }
+[data-testid="stToolbar"] { display: none !important; height: 0 !important; }
+[data-testid="stDecoration"] { display: none !important; height: 0 !important; }
 [data-testid="stStatusWidget"] { display: none !important; }
+[data-testid="stHeader"] { display: none !important; height: 0 !important; }
+.stApp > header { display: none !important; height: 0 !important; }
+div[data-testid="stAppViewBlockContainer"] { padding-top: 0 !important; }
 
 [data-testid="stSidebar"] {
     background: #071910 !important;
+    min-width: 250px !important;
     border-right: 1px solid rgba(212,175,55,0.3) !important;
 }
 [data-testid="stSidebar"] > div { padding: 0 !important; }
@@ -269,6 +273,9 @@ header { visibility: hidden !important; }
     border-left: 2px solid #D4AF37 !important;
     font-weight: 500 !important;
 }
+[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p { color: inherit !important; }
+[data-testid="stSidebar"] input[type="radio"] { display: none !important; }
+[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child { display: none !important; }
 
 .stSuccess { border-left: 3px solid #D4AF37 !important; background: rgba(212,175,55,0.08) !important; }
 .stError { border-left: 3px solid #8B2020 !important; }
@@ -499,7 +506,7 @@ st.markdown(f"""
 # Sidebar
 st.sidebar.markdown(f"""
 <div class="nl-sb-logo">
-    <img src="data:image/png;base64,{LOGO_B64}" width="160" style="object-fit:contain; display:block; margin:0 auto;">
+    <img src="data:image/png;base64,{LOGO_B64}" width="180" style="object-fit:contain; display:block; margin:0 auto;">
     <div class="nl-sb-tagline">Smarter Listings. Better Results.</div>
 </div>
 <div class="nl-sb-agent">
@@ -515,6 +522,7 @@ page = st.sidebar.radio(
     label_visibility="hidden"
 )
 st.sidebar.markdown("---")
+st.sidebar.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
 if st.sidebar.button("Logout", use_container_width=True):
     st.session_state.agent = None
     st.rerun()
@@ -563,7 +571,7 @@ if page == "Dashboard":
         <div style="border-radius:4px; overflow:hidden; position:relative; min-height:280px;
             background-image: url('data:image/webp;base64,{HERO_B64}');
             background-size:cover; background-position:center;
-            border: 0.5px solid rgba(212,175,55,0.25); display:flex; flex-direction:column; justify-content:flex-end; padding:24px;">
+            border: 0.5px solid rgba(212,175,55,0.25); display:flex; flex-direction:column; justify-content:flex-end; padding:24px; min-height:400px;">
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(7,25,16,0.88) 0%, rgba(7,25,16,0.2) 40%, rgba(7,25,16,0.05) 100%);"></div>
             <div style="position:relative; z-index:2;">
                 <div style="width:40px; height:1px; background:#D4AF37; margin-bottom:14px;"></div>
@@ -579,7 +587,7 @@ if page == "Dashboard":
 
     with col_market:
         st.markdown("""
-        <div style="background:rgba(255,255,255,0.05); border:0.5px solid rgba(212,175,55,0.25); border-radius:4px; padding:20px 22px; min-height:280px;">
+        <div style="background:rgba(255,255,255,0.05); border:0.5px solid rgba(212,175,55,0.25); border-radius:4px; padding:20px 22px; min-height:400px; display:flex; flex-direction:column;">
             <div style="font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(212,175,55,0.95); margin-bottom:16px; display:flex; align-items:center; gap:10px; font-weight:500;">
                 <span style="display:inline-block; width:20px; height:1.5px; background:#D4AF37;"></span>
                 Singapore Market Pulse
@@ -604,7 +612,7 @@ if page == "Dashboard":
                 <div style="font-size:13px; color:rgba(248,244,236,0.65);">Nassim Road Price Range</div>
                 <div style="font-family:'Cormorant Garamond',serif; font-size:18px; color:#D4AF37;">SGD 2,500–4,000 psf</div>
             </div>
-            <div style="margin-top:16px; padding-top:12px; border-top:0.5px solid rgba(212,175,55,0.15);">
+            <div style="margin-top:auto; padding-top:16px; border-top:0.5px solid rgba(212,175,55,0.15);">
                 <div style="font-size:10px; color:rgba(212,175,55,0.7); letter-spacing:0.04em; line-height:1.7;">
                     <strong style="color:rgba(212,175,55,0.85);">&#9432; Disclaimer:</strong> Data sourced from URA Realis &amp; EdgeProp Singapore. Figures are indicative and updated periodically. NestList does not warrant the accuracy of market data. Always verify with URA or a licensed professional before making property decisions.
                 </div>
