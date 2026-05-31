@@ -87,9 +87,9 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
 
 /* ALL BUTTONS DEFAULT */
 .stButton > button {
-    background: #163D2E !important;
-    border: 1px solid rgba(212,175,55,0.4) !important;
-    color: #F8F4EC !important;
+    background: transparent !important;
+    border: 1px solid rgba(212,175,55,0.5) !important;
+    color: rgba(212,175,55,0.9) !important;
     border-radius: 2px !important;
     font-size: 12px !important;
     letter-spacing: 0.14em !important;
@@ -396,7 +396,7 @@ st.sidebar.markdown(f"""
         letter-spacing:0.04em; line-height:1.5;">{agent["specialty"]}</div>
 </div>
 <div style="font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
-    padding:4px 20px 8px; color:rgba(212,175,55,0.9); font-weight:500;">Navigation</div>
+    padding:4px 20px 4px; color:rgba(212,175,55,0.9); font-weight:500;">Navigation</div>
 """, unsafe_allow_html=True)
 
 page = st.sidebar.radio(
@@ -404,11 +404,6 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-st.sidebar.markdown('''
-<div style="border-top:0.5px solid rgba(212,175,55,0.2); margin-top:20px; padding:12px 18px;">
-    <span style="font-size:15px; color:rgba(248,244,236,0.65); letter-spacing:0.04em;
-        font-family:Montserrat,sans-serif; font-weight:400; cursor:pointer;">Logout</span>
-</div>''', unsafe_allow_html=True)
 if st.sidebar.button("Logout", use_container_width=True, key="logout_btn"):
     st.session_state.agent = None
     st.rerun()
