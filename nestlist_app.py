@@ -85,10 +85,25 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     display: flex !important;
 }
 
-/* ALL BUTTONS DEFAULT */
-.stButton > button {
+/* HIDE ALL SIDEBAR BUTTONS */
+[data-testid="stSidebar"] .stButton > button {
+    display: none !important;
+}
+
+/* LOGIN PAGE BUTTON - hide it, we show HTML instead */
+[data-testid="stVerticalBlock"] .stButton > button {
+    opacity: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    position: absolute !important;
+}
+
+/* MAIN CONTENT BUTTONS - gold outline */
+.main .stButton > button {
     background: transparent !important;
-    border: 1px solid rgba(212,175,55,0.5) !important;
+    border: 1px solid rgba(212,175,55,0.6) !important;
     color: rgba(212,175,55,0.9) !important;
     border-radius: 2px !important;
     font-size: 12px !important;
@@ -97,17 +112,6 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     font-weight: 400 !important;
     padding: 12px 16px !important;
     font-family: 'Montserrat', sans-serif !important;
-}
-.stButton > button:hover {
-    background: rgba(212,175,55,0.1) !important;
-    color: #D4AF37 !important;
-}
-
-/* MAIN CONTENT BUTTONS - gold outline style */
-.main .stButton > button {
-    background: transparent !important;
-    border: 1px solid rgba(212,175,55,0.6) !important;
-    color: rgba(212,175,55,0.9) !important;
 }
 .main .stButton > button:hover {
     background: rgba(212,175,55,0.1) !important;
@@ -299,6 +303,13 @@ if st.session_state.agent is None:
         st.subheader("Agent Login")
         email = st.text_input("Email", key="login_email")
         password = st.text_input("Password", type="password", key="login_password")
+        st.markdown('''<div style="height:8px;"></div>''', unsafe_allow_html=True)
+        col_a, col_b, col_c = st.columns([1,2,1])
+        with col_b:
+            st.markdown('''<div style="text-align:center; padding:12px 0; font-size:13px;
+                letter-spacing:0.2em; color:rgba(212,175,55,0.9); cursor:pointer;
+                font-family:Montserrat,sans-serif; border-bottom:1px solid rgba(212,175,55,0.3);">
+                LOGIN</div>''', unsafe_allow_html=True)
         if st.button("Login", use_container_width=True, key="login_btn"):
             if email and password:
                 agent = login_agent(email, password)
@@ -404,7 +415,14 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-if st.sidebar.button("Logout", use_container_width=True, key="logout_btn"):
+# Logout HTML text aligned like nav items
+st.sidebar.markdown(f'''
+<div style="border-top:0.5px solid rgba(212,175,55,0.2); padding:12px 18px 16px;">
+    <span style="font-size:15px; color:rgba(248,244,236,0.65); letter-spacing:0.04em;
+        font-family:Montserrat,sans-serif; font-weight:400;">Logout</span>
+</div>''', unsafe_allow_html=True)
+# Hidden functional button
+if st.sidebar.button("x", key="logout_btn", help="Logout"):
     st.session_state.agent = None
     st.rerun()
 
