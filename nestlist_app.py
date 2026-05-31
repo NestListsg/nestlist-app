@@ -42,6 +42,7 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
 [data-testid="stSidebarContent"] { padding: 0 !important; margin-top: 0 !important; }
 [data-testid="stSidebar"] > div > div { padding-top: 0 !important; margin-top: 0 !important; }
 [data-testid="stSidebar"] section { padding-top: 0 !important; }
+[data-testid="stSidebar"] > div:first-child { margin-top: -80px !important; }
 
 /* SIDEBAR NAV - hide dots completely */
 [data-testid="stSidebar"] input[type="radio"] { display: none !important; }
@@ -80,23 +81,36 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     margin: 0 !important;
     width: 100% !important;
     text-align: left !important;
+    justify-content: flex-start !important;
+    display: flex !important;
 }
 
-/* MAIN CONTENT BUTTONS */
-.main .stButton > button {
-    background: transparent !important;
-    border: 1px solid rgba(212,175,55,0.6) !important;
-    color: rgba(212,175,55,0.9) !important;
+/* ALL BUTTONS DEFAULT */
+.stButton > button {
+    background: #D4AF37 !important;
+    border: 1px solid #D4AF37 !important;
+    color: #0E2820 !important;
     border-radius: 2px !important;
     font-size: 12px !important;
     letter-spacing: 0.14em !important;
     text-transform: uppercase !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     padding: 12px 16px !important;
     font-family: 'Montserrat', sans-serif !important;
 }
+.stButton > button:hover {
+    background: #c9a430 !important;
+}
+
+/* MAIN CONTENT BUTTONS - gold outline style */
+.main .stButton > button {
+    background: transparent !important;
+    border: 1px solid rgba(212,175,55,0.6) !important;
+    color: rgba(212,175,55,0.9) !important;
+}
 .main .stButton > button:hover {
     background: rgba(212,175,55,0.1) !important;
+    color: #D4AF37 !important;
 }
 
 /* INPUTS */
