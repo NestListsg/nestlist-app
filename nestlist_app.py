@@ -46,7 +46,7 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
 
 /* SIDEBAR NAV - hide dots completely */
 [data-testid="stSidebar"] input[type="radio"] { display: none !important; }
-[data-testid="stSidebar"] .stRadio > div { gap: 0 !important; }
+[data-testid="stSidebar"] .stRadio > div { gap: 0 !important; margin-top: -20px !important; }
 [data-testid="stSidebar"] .stRadio > div > label > div:first-child { display: none !important; }
 [data-testid="stSidebar"] .stRadio label {
     font-size: 15px !important;
@@ -85,9 +85,29 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     display: flex !important;
 }
 
-/* SIDEBAR BUTTONS - hidden */
+/* SIDEBAR BUTTONS */
 [data-testid="stSidebar"] .stButton > button {
-    display: none !important;
+    background: transparent !important;
+    border: none !important;
+    border-top: 0.5px solid rgba(212,175,55,0.2) !important;
+    color: rgba(248,244,236,0.65) !important;
+    border-radius: 0 !important;
+    font-size: 15px !important;
+    letter-spacing: 0.04em !important;
+    font-weight: 400 !important;
+    text-transform: none !important;
+    padding: 12px 18px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    width: 100% !important;
+}
+[data-testid="stSidebar"] .stButton p {
+    font-size: 15px !important;
+    letter-spacing: 0.04em !important;
+    font-weight: 400 !important;
+    font-family: 'Montserrat', sans-serif !important;
+    color: rgba(248,244,236,0.65) !important;
+    text-transform: none !important;
+    text-align: left !important;
 }
 
 /* ALL OTHER BUTTONS - transparent with gold text */
@@ -396,14 +416,11 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-# Logout HTML text aligned like nav items
-st.sidebar.markdown(f'''
+# Logout - use radio selection trick
+st.sidebar.markdown('''
 <div style="border-top:0.5px solid rgba(212,175,55,0.2); padding:12px 18px 16px;">
-    <span style="font-size:15px; color:rgba(248,244,236,0.65); letter-spacing:0.04em;
-        font-family:Montserrat,sans-serif; font-weight:400;">Logout</span>
 </div>''', unsafe_allow_html=True)
-# Hidden functional button
-if st.sidebar.button("x", key="logout_btn", help="Logout"):
+if st.sidebar.button("Logout", key="logout_btn"):
     st.session_state.agent = None
     st.rerun()
 
