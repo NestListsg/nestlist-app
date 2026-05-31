@@ -71,7 +71,7 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     background: transparent !important;
     border: none !important;
     border-top: 0.5px solid rgba(212,175,55,0.2) !important;
-    color: rgba(248,244,236,0.5) !important;
+    color: rgba(248,244,236,0.65) !important;
     border-radius: 0 !important;
     font-size: 15px !important;
     letter-spacing: 0.04em !important;
