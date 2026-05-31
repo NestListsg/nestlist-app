@@ -87,19 +87,20 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
 
 /* ALL BUTTONS DEFAULT */
 .stButton > button {
-    background: #D4AF37 !important;
-    border: 1px solid #D4AF37 !important;
-    color: #0E2820 !important;
+    background: #163D2E !important;
+    border: 1px solid rgba(212,175,55,0.4) !important;
+    color: #F8F4EC !important;
     border-radius: 2px !important;
     font-size: 12px !important;
     letter-spacing: 0.14em !important;
     text-transform: uppercase !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
     padding: 12px 16px !important;
     font-family: 'Montserrat', sans-serif !important;
 }
 .stButton > button:hover {
-    background: #c9a430 !important;
+    background: rgba(212,175,55,0.1) !important;
+    color: #D4AF37 !important;
 }
 
 /* MAIN CONTENT BUTTONS - gold outline style */
@@ -403,8 +404,12 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-st.sidebar.markdown('''<div style="border-top:0.5px solid rgba(212,175,55,0.2); margin-top:20px;">''', unsafe_allow_html=True)
-if st.sidebar.button("Logout", use_container_width=True):
+st.sidebar.markdown('''
+<div style="border-top:0.5px solid rgba(212,175,55,0.2); margin-top:20px; padding:12px 18px;">
+    <span style="font-size:15px; color:rgba(248,244,236,0.65); letter-spacing:0.04em;
+        font-family:Montserrat,sans-serif; font-weight:400; cursor:pointer;">Logout</span>
+</div>''', unsafe_allow_html=True)
+if st.sidebar.button("Logout", use_container_width=True, key="logout_btn"):
     st.session_state.agent = None
     st.rerun()
 
