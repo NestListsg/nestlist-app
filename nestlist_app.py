@@ -85,37 +85,25 @@ section[data-testid="stSidebar"] + div { padding-top: 0 !important; }
     display: flex !important;
 }
 
-/* HIDE ALL SIDEBAR BUTTONS */
+/* SIDEBAR BUTTONS - hidden */
 [data-testid="stSidebar"] .stButton > button {
     display: none !important;
 }
 
-/* LOGIN PAGE BUTTON - hide it, we show HTML instead */
-[data-testid="stVerticalBlock"] .stButton > button {
-    opacity: 0 !important;
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    position: absolute !important;
-}
-
-/* MAIN CONTENT BUTTONS - gold outline */
-.main .stButton > button {
+/* ALL OTHER BUTTONS - transparent with gold text */
+.stButton > button {
     background: transparent !important;
-    border: 1px solid rgba(212,175,55,0.6) !important;
+    border: 1px solid rgba(212,175,55,0.5) !important;
     color: rgba(212,175,55,0.9) !important;
     border-radius: 2px !important;
     font-size: 12px !important;
     letter-spacing: 0.14em !important;
-    text-transform: uppercase !important;
     font-weight: 400 !important;
     padding: 12px 16px !important;
     font-family: 'Montserrat', sans-serif !important;
 }
-.main .stButton > button:hover {
+.stButton > button:hover {
     background: rgba(212,175,55,0.1) !important;
-    color: #D4AF37 !important;
 }
 
 /* INPUTS */
@@ -303,13 +291,6 @@ if st.session_state.agent is None:
         st.subheader("Agent Login")
         email = st.text_input("Email", key="login_email")
         password = st.text_input("Password", type="password", key="login_password")
-        st.markdown('''<div style="height:8px;"></div>''', unsafe_allow_html=True)
-        col_a, col_b, col_c = st.columns([1,2,1])
-        with col_b:
-            st.markdown('''<div style="text-align:center; padding:12px 0; font-size:13px;
-                letter-spacing:0.2em; color:rgba(212,175,55,0.9); cursor:pointer;
-                font-family:Montserrat,sans-serif; border-bottom:1px solid rgba(212,175,55,0.3);">
-                LOGIN</div>''', unsafe_allow_html=True)
         if st.button("Login", use_container_width=True, key="login_btn"):
             if email and password:
                 agent = login_agent(email, password)
