@@ -403,7 +403,7 @@ page = st.sidebar.radio(
     ["Dashboard", "New Listing", "My Listings", "Enquiries", "My Profile", "Billing"],
     label_visibility="hidden"
 )
-st.sidebar.markdown("<div style='flex:1;'></div>", unsafe_allow_html=True)
+st.sidebar.markdown('''<div style="border-top:0.5px solid rgba(212,175,55,0.2); margin-top:20px;">''', unsafe_allow_html=True)
 if st.sidebar.button("Logout", use_container_width=True):
     st.session_state.agent = None
     st.rerun()
