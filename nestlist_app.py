@@ -529,11 +529,6 @@ if "agent" not in st.session_state:
     st.session_state.agent = None
 
 if st.session_state.agent is None:
-    st.markdown("""
-    <div style="min-height:100vh; background:#0E2820; display:flex; align-items:center; justify-content:center; padding:40px;">
-    </div>
-    """, unsafe_allow_html=True)
-
     col_l, col_m, col_r = st.columns([1, 1.2, 1])
     with col_m:
         st.markdown("""
@@ -642,8 +637,29 @@ page = st.sidebar.radio(
 )
 
 st.sidebar.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
-st.sidebar.markdown("<div class='nl-sb-logout'>Logout</div>", unsafe_allow_html=True)
-if st.sidebar.button("→ Log out", key="logout_btn", use_container_width=False):
+st.sidebar.markdown("""
+<style>
+div[data-testid="stSidebar"] .stButton#logout_btn > button {
+    background: transparent !important;
+    border: none !important;
+    color: rgba(248,244,236,0.35) !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 300 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: none !important;
+    padding: 8px 16px !important;
+    text-align: left !important;
+    width: auto !important;
+    box-shadow: none !important;
+}
+div[data-testid="stSidebar"] .stButton#logout_btn > button:hover {
+    color: rgba(248,244,236,0.6) !important;
+    background: transparent !important;
+}
+</style>
+""", unsafe_allow_html=True)
+if st.sidebar.button("Logout", key="logout_btn"):
     st.session_state.agent = None
     st.rerun()
 
