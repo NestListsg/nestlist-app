@@ -22,7 +22,7 @@ st.markdown("""
 html, body, [class*="css"] {
     font-family: 'Montserrat', sans-serif;
 }
-.stApp { background: #0E2820; }
+.stApp { background: #163D2E; }
 .main .block-container { padding: 0 !important; max-width: 100% !important; }
 
 /* ── HIDE STREAMLIT CHROME ── */
