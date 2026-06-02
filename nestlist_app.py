@@ -391,8 +391,8 @@ header { visibility: hidden; }
 /* ── BUTTONS ── */
 .stButton > button {
     background: transparent !important;
-    border: 1px solid #0E2820 !important;
-    color: #0E2820 !important;
+    border: 1px solid #D4AF37 !important;
+    color: #F8F4EC !important;
     border-radius: 2px !important;
     font-size: 10px !important;
     letter-spacing: 0.1em !important;
