@@ -33,7 +33,7 @@ header { visibility: hidden; }
 
 /* ── SIDEBAR ── */
 [data-testid="stSidebar"] {
-    background: #0E2820 !important;
+    background: #163D2E !important;
     border-right: 0.5px solid rgba(212,175,55,0.2) !important;
 }
 [data-testid="stSidebar"] > div { padding: 0 !important; }
@@ -41,7 +41,7 @@ header { visibility: hidden; }
 
 /* ── HEADER ── */
 .nl-header {
-    background: #0E2820;
+    background: #163D2E;
     padding: 20px 28px;
     border-bottom: 0.5px solid rgba(212,175,55,0.2);
     display: flex;
@@ -334,7 +334,7 @@ header { visibility: hidden; }
     letter-spacing: 0.22em;
     text-transform: uppercase;
     padding: 0 16px;
-    margin-bottom: 4px;
+    margin-bottom: 0px;
     color: rgba(212,175,55,0.3);
     font-family: 'Montserrat', sans-serif;
 }
