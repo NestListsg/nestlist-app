@@ -681,13 +681,6 @@ st.sidebar.markdown(f"""
     <div class="nl-sb-agent-spec">{agent['specialty']}</div>
 </div>
 <div class="nl-sb-nav-label">Navigation</div>
-<style>
-[data-testid="stSidebar"] .stRadio label > div:first-child { display:none!important; }
-[data-testid="stSidebar"] .stRadio input[type=radio] { display:none!important; }
-[data-testid="stSidebar"] .stRadio label { color:rgba(248,244,236,0.75)!important; font-size:13px!important; font-family:Montserrat,sans-serif!important; font-weight:300!important; padding:10px 16px!important; margin:1px 8px!important; display:block!important; cursor:pointer!important; border-radius:4px!important; }
-[data-testid="stSidebar"] .stRadio label:has(input:checked) { background:rgba(212,175,55,0.1)!important; color:#F8F4EC!important; border-left:2px solid #D4AF37!important; padding-left:14px!important; }
-[data-testid="stSidebar"] .stRadio p { color:inherit!important; font-size:13px!important; font-family:Montserrat,sans-serif!important; }
-</style>
 """, unsafe_allow_html=True)
 
 page = st.sidebar.radio(
