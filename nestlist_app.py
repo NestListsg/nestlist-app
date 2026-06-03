@@ -142,9 +142,10 @@ header { visibility: hidden; }
     text-align: center;
 }
 .nl-card-num {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: Georgia, 'Times New Roman', serif;
     font-size: 52px;
-    font-weight: 300;
+    font-weight: 400;
+    font-style: normal;
     color: #0E2820;
     letter-spacing: -0.02em;
     line-height: 1;
@@ -353,10 +354,12 @@ header { visibility: hidden; }
 /* ── RADIO (nav) ── */
 [data-testid="stSidebar"] .stRadio { margin: 0 !important; }
 [data-testid="stSidebar"] .stRadio > div { gap: 0 !important; }
-[data-testid="stSidebar"] .stRadio > label { display: none !important; }
+[data-testid="stSidebar"] .stRadio input { position:fixed !important; opacity:0 !important; pointer-events:none !important; }
+[data-testid="stSidebar"] .stRadio label > div:first-child,
+[data-testid="stSidebar"] .stRadio label > div:first-child > div { display: none !important; width:0 !important; height:0 !important; }
 [data-testid="stSidebar"] .stRadio label {
-    font-size: 12px !important;
-    color: rgba(248,244,236,0.5) !important;
+    font-size: 13px !important;
+    color: rgba(248,244,236,0.75) !important;
     letter-spacing: 0.04em !important;
     padding: 10px 16px !important;
     border-radius: 4px !important;
@@ -371,10 +374,11 @@ header { visibility: hidden; }
     border-left: 2px solid #D4AF37 !important;
     padding-left: 14px !important;
 }
-[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p {
-    font-size: 12px !important;
+[data-testid="stSidebar"] .stRadio p {
+    font-size: 13px !important;
     font-family: 'Montserrat', sans-serif !important;
     letter-spacing: 0.04em !important;
+    color: inherit !important;
 }
 
 /* ── FORMS / INPUTS ── */
@@ -390,9 +394,9 @@ header { visibility: hidden; }
 
 /* ── BUTTONS ── */
 .stButton > button {
-    background: rgba(0,0,0,0) !important;
-    border: 1px solid #D4AF37 !important;
-    color: #D4AF37 !important;
+    background: transparent !important;
+    border: 1px solid #0E2820 !important;
+    color: #0E2820 !important;
     border-radius: 2px !important;
     font-size: 10px !important;
     letter-spacing: 0.1em !important;
@@ -418,6 +422,45 @@ header { visibility: hidden; }
     color: #0E2820 !important;
     font-family: 'Montserrat', sans-serif !important;
     font-size: 12px !important;
+}
+
+/* ── TABS ── */
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; gap: 0 !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; color: rgba(248,244,236,0.4) !important; font-family: 'Montserrat', sans-serif !important; font-size: 10px !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; }
+.stTabs [aria-selected="true"] { color: #F8F4EC !important; }
+.stTabs [data-baseweb="tab-highlight"] { background-color: #D4AF37 !important; height: 3px !important; }
+.stTabs [data-baseweb="tab-border"] { background-color: transparent !important; }
+
+/* ── TABS (login page) ── */
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 0.5px solid rgba(212,175,55,0.2) !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; color: rgba(248,244,236,0.4) !important; font-family: 'Montserrat', sans-serif !important; font-size: 11px !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; font-weight: 400 !important; }
+.stTabs [aria-selected="true"] { color: #F8F4EC !important; }
+.stTabs [data-baseweb="tab-highlight"] { background: #D4AF37 !important; }
+.stTabs [data-baseweb="tab-border"] { display: none !important; }
+
+/* ── LOGIN BUTTON ── */
+.stButton > button {
+    background: transparent !important;
+    border: 1px solid #D4AF37 !important;
+    color: #D4AF37 !important;
+    border-radius: 2px !important;
+    font-size: 10px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    font-weight: 400 !important;
+    padding: 14px 16px !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+.stButton > button:hover {
+    background: #D4AF37 !important;
+    color: #0E2820 !important;
+}
+/* Force transparent on all button variants */
+.stButton > button[data-testid],
+button[kind="secondary"],
+button[kind="primary"] {
+    background: transparent !important;
+    background-color: transparent !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -533,11 +576,20 @@ if st.session_state.agent is None:
     with col_m:
         st.markdown("""
         <div style="text-align:center; padding:32px 0 24px;">
-            <div style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:300; letter-spacing:0.22em; color:#F8F4EC;">
-                NEST<span style="color:#D4AF37;">LIST</span>
+            <img src="https://raw.githubusercontent.com/NestListsg/nestlist-app/main/assets/logo.png" 
+                 onerror="this.style.display='none'; document.getElementById('nl-text-logo').style.display='block';"
+                 style="width:80px; height:80px; margin:0 auto 12px; display:block;">
+            <div id="nl-text-logo" style="display:none;">
+                <div style="width:80px; height:80px; border-radius:50%; border:1.5px solid #D4AF37; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                    <span style="font-family:'Cormorant Garamond',serif; font-size:32px; color:#D4AF37; font-weight:300;">N</span>
+                </div>
             </div>
-            <div style="font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(212,175,55,0.5); margin-top:6px; font-family:'Montserrat',sans-serif;">
-                Prestige · Singapore's AI-Powered Property Platform
+            <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; letter-spacing:0.28em; color:#F8F4EC; text-transform:uppercase;">
+                NEST <span style="color:#D4AF37;">LIST</span>
+            </div>
+            <div style="width:32px; height:1px; background:#D4AF37; margin:8px auto;"></div>
+            <div style="font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(212,175,55,0.5); margin-top:6px; font-family:'Montserrat',sans-serif;">
+                Smarter Listings. Better Results.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -636,30 +688,31 @@ page = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
-st.sidebar.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
 st.sidebar.markdown("""
 <style>
 div[data-testid="stSidebar"] .stButton#logout_btn > button {
     background: transparent !important;
+    background-color: transparent !important;
     border: none !important;
-    color: rgba(248,244,236,0.35) !important;
+    box-shadow: none !important;
+    color: rgba(248,244,236,0.4) !important;
     font-family: 'Montserrat', sans-serif !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-weight: 300 !important;
     letter-spacing: 0.04em !important;
     text-transform: none !important;
-    padding: 8px 16px !important;
+    padding: 10px 24px !important;
     text-align: left !important;
-    width: auto !important;
-    box-shadow: none !important;
+    width: 100% !important;
 }
 div[data-testid="stSidebar"] .stButton#logout_btn > button:hover {
-    color: rgba(248,244,236,0.6) !important;
+    color: rgba(248,244,236,0.7) !important;
     background: transparent !important;
 }
+div[data-testid="stSidebar"] hr { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
-if st.sidebar.button("Logout", key="logout_btn"):
+if st.sidebar.button("Logout", key="logout_btn", type="secondary"):
     st.session_state.agent = None
     st.rerun()
 
@@ -675,10 +728,10 @@ if page == "Dashboard":
     <div class="nl-body">
         <div class="nl-section-label">Dashboard Overview</div>
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;">
-            <div class="nl-card"><div class="nl-card-num">{total_listings}</div><div class="nl-card-label">Active Listings</div></div>
-            <div class="nl-card"><div class="nl-card-num">0</div><div class="nl-card-label">Total Enquiries</div></div>
-            <div class="nl-card"><div class="nl-card-num">0</div><div class="nl-card-label">Total Views</div></div>
-            <div class="nl-card"><div class="nl-card-num">0</div><div class="nl-card-label">Serious Buyers</div></div>
+            <div class="nl-card"><div style="font-family:Georgia,serif;font-size:52px;font-weight:400;font-style:normal;color:#0E2820;letter-spacing:-0.02em;line-height:1;">{total_listings}</div><div class="nl-card-label">Active Listings</div></div>
+            <div class="nl-card"><div style="font-family:Georgia,serif;font-size:52px;font-weight:400;font-style:normal;color:#0E2820;letter-spacing:-0.02em;line-height:1;">0</div><div class="nl-card-label">Total Enquiries</div></div>
+            <div class="nl-card"><div style="font-family:Georgia,serif;font-size:52px;font-weight:400;font-style:normal;color:#0E2820;letter-spacing:-0.02em;line-height:1;">0</div><div class="nl-card-label">Total Views</div></div>
+            <div class="nl-card"><div style="font-family:Georgia,serif;font-size:52px;font-weight:400;font-style:normal;color:#0E2820;letter-spacing:-0.02em;line-height:1;">0</div><div class="nl-card-label">Serious Buyers</div></div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
             <div class="nl-panel">
@@ -697,11 +750,12 @@ if page == "Dashboard":
     """, unsafe_allow_html=True)
 
     # Hero + Market Pulse
+    st.markdown('<div style="background:#163D2E; padding:24px 28px 28px;">', unsafe_allow_html=True)
     col_hero, col_pulse = st.columns([1, 1])
 
     with col_hero:
         st.markdown("""
-        <div class="nl-hero" style="background-image:url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80'); background-size:cover; background-position:center;">
+        <div class="nl-hero" style="background-image:url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80'); background-size:cover; background-position:center; height:380px; position:relative; display:block;">
             <div class="nl-hero-overlay">
                 <div class="nl-hero-title">Where Singapore's Finest<br>Properties Find Their <span>Buyers</span></div>
                 <div class="nl-hero-sub">NestList Prestige &nbsp;·&nbsp; Est. 2026</div>
@@ -739,6 +793,7 @@ if page == "Dashboard":
             </div>
         </div>
         """, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ================================
 # NEW LISTING PAGE
