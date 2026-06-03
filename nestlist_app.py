@@ -425,8 +425,8 @@ header { visibility: hidden; }
 }
 
 /* ── TABS ── */
-.stTabs [data-baseweb="tab-list"] { background: transparent !important; gap: 0 !important; }
-.stTabs [data-baseweb="tab"] { background: transparent !important; color: rgba(248,244,236,0.4) !important; font-family: 'Montserrat', sans-serif !important; font-size: 10px !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; }
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; gap: 16px !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; color: rgba(248,244,236,0.4) !important; font-family: 'Montserrat', sans-serif !important; font-size: 10px !important; letter-spacing: 0.12em !important; text-transform: uppercase !important; padding: 8px 4px !important; }
 .stTabs [aria-selected="true"] { color: #F8F4EC !important; }
 .stTabs [data-baseweb="tab-highlight"] { background-color: #D4AF37 !important; height: 3px !important; }
 .stTabs [data-baseweb="tab-border"] { background-color: transparent !important; }
@@ -576,14 +576,15 @@ if st.session_state.agent is None:
     with col_m:
         st.markdown("""
         <div style="text-align:center; padding:32px 0 24px;">
-            <img src="https://raw.githubusercontent.com/NestListsg/nestlist-app/main/assets/logo.png" 
-                 onerror="this.style.display='none'; document.getElementById('nl-text-logo').style.display='block';"
-                 style="width:80px; height:80px; margin:0 auto 12px; display:block;">
-            <div id="nl-text-logo" style="display:none;">
-                <div style="width:80px; height:80px; border-radius:50%; border:1.5px solid #D4AF37; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
-                    <span style="font-family:'Cormorant Garamond',serif; font-size:32px; color:#D4AF37; font-weight:300;">N</span>
-                </div>
-            </div>
+            <svg width="80" height="80" viewBox="0 0 80 80" style="margin:0 auto 12px; display:block;">
+                <circle cx="40" cy="40" r="38" fill="none" stroke="#D4AF37" stroke-width="1.2"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="0.5"/>
+                <polygon points="40,8 43,36 40,40 37,36" fill="#D4AF37"/>
+                <polygon points="40,72 43,44 40,40 37,44" fill="rgba(212,175,55,0.4)"/>
+                <polygon points="8,40 36,37 40,40 36,43" fill="rgba(212,175,55,0.4)"/>
+                <polygon points="72,40 44,37 40,40 44,43" fill="rgba(212,175,55,0.4)"/>
+                <text x="40" y="46" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-size="22" font-weight="300" fill="#F8F4EC" letter-spacing="1">N</text>
+            </svg>
             <div style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; letter-spacing:0.28em; color:#F8F4EC; text-transform:uppercase;">
                 NEST <span style="color:#D4AF37;">LIST</span>
             </div>
@@ -680,6 +681,13 @@ st.sidebar.markdown(f"""
     <div class="nl-sb-agent-spec">{agent['specialty']}</div>
 </div>
 <div class="nl-sb-nav-label">Navigation</div>
+<style>
+[data-testid="stSidebar"] .stRadio label > div:first-child { display:none!important; }
+[data-testid="stSidebar"] .stRadio input[type=radio] { display:none!important; }
+[data-testid="stSidebar"] .stRadio label { color:rgba(248,244,236,0.75)!important; font-size:13px!important; font-family:Montserrat,sans-serif!important; font-weight:300!important; padding:10px 16px!important; margin:1px 8px!important; display:block!important; cursor:pointer!important; border-radius:4px!important; }
+[data-testid="stSidebar"] .stRadio label:has(input:checked) { background:rgba(212,175,55,0.1)!important; color:#F8F4EC!important; border-left:2px solid #D4AF37!important; padding-left:14px!important; }
+[data-testid="stSidebar"] .stRadio p { color:inherit!important; font-size:13px!important; font-family:Montserrat,sans-serif!important; }
+</style>
 """, unsafe_allow_html=True)
 
 page = st.sidebar.radio(
@@ -750,7 +758,7 @@ if page == "Dashboard":
     """, unsafe_allow_html=True)
 
     # Hero + Market Pulse
-    st.markdown('<div style="background:#163D2E; padding:24px 28px 28px;">', unsafe_allow_html=True)
+    st.markdown('</div><div style="background:#163D2E; padding:24px 28px 28px;">', unsafe_allow_html=True)
     col_hero, col_pulse = st.columns([1, 1])
 
     with col_hero:
